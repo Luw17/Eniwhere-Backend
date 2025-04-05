@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsuariosRepository } from './repositories/usuarios.repository';
 import { OrdensRepository } from './repositories/ordens.repository';
-import { usuarios } from './entities/users.entity';
+import { usuarios } from './entities/user.entity';
 import { MoreThan, Repository } from 'typeorm';
 import { Ordens } from './entities/ordens.entity';
 
