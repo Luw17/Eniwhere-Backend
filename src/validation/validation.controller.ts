@@ -33,7 +33,8 @@ export class ValidationController {
     }
     return await this.ordensService.updateOrdem(id, body);
   }
-
+/*função em manutenção
+    sujeita a troca de nome e valores de entrada
   @Post('ordens')
   async createOrdem(
     @Body(ValidateCpfPipe) body: { cpf: string; aparelho: string; marca: string; modelo: string; problema: string }
@@ -46,12 +47,13 @@ export class ValidationController {
     }
     return await this.ordensService.createOrdem(body);
   }
-
+  */
   @Delete('ordens/:id')
   async deleteOrdem(@Param('id') id: number) {
     return await this.ordensService.deleteOrdem(id);
   }
-
+  /*função em manutenção
+    sujeita a troca de nome e valores de entrada
   @Put('ordens/:id/concluir')
   async concluirOrdem(
     @Param('id') id: number,
@@ -59,6 +61,7 @@ export class ValidationController {
   ) {
     return await this.ordensService.concluirOrdem(id, body);
   }
+    */
 
   @Get('usuarios')
   async getAllUsers() {
