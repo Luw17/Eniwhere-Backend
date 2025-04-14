@@ -1,46 +1,39 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Address } from './address.entity';
-import { UserDevice } from './user-device.entity';
-import { CodeUser } from './code-user.entity';
 
-@Entity()
+@Entity('user')
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 45 })
   document: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 255 })
   email: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   phone: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 45 })
   user: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 45 })
   password: string;
 
-  @Column({ nullable: true })
-  number: string;
+  @Column({ type: 'smallint', nullable: true })
+  number: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 45, nullable: true })
   code: string;
 
   @Column({ type: 'datetime', nullable: true })
   validity: Date;
 
-  @ManyToOne(() => Address, address => address.users)
+  @ManyToOne(() => Address)
+  @JoinColumn({ name: 'address_id' })
   address: Address;
-
-  @OneToMany(() => UserDevice, ud => ud.user)
-  devices: UserDevice[];
-
-  @OneToMany(() => CodeUser, code => code.user)
-  codes: CodeUser[];
 }

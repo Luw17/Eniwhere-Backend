@@ -1,20 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { UserDevice } from './user-device.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
+@Entity('device')
 export class Device {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'smallint', unsigned: true })
   id: number;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 45 })
   device: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 45 })
   model: string;
 
-  @Column('text')
-  mark: string;
-
-  @OneToMany(() => UserDevice, ud => ud.device)
-  userDevices: UserDevice[];
+  @Column({ type: 'varchar', length: 45 })
+  brand: string;
 }

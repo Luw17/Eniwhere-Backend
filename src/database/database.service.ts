@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { OrderRepository } from './repositories/order.repository';
 import { User } from './entities/user.entity';
-import { Order } from './entities/order.entity';
+import { Order } from './entities/service_order.entity';
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
@@ -15,6 +15,7 @@ export class DatabaseService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly orderRepository: OrderRepository,
+    private readonly orderLogRepository: OrderRepository,
   ) {}
 
   async selectUsers() {
@@ -161,13 +162,12 @@ export class DatabaseService {
     }
   }
 
-  /* todo: sera modificada para a estrutura do novo banco
+  /* todo: sera modificada para a estrutura do novo banco*/
   async createOrder(data: {
     userDeviceId: number;
     storeId: number;
     picture: string;
-    feedback: number;
-    warranty: number;
+
   }) {
     try {
       await this.orderRepository.createOrder({
@@ -175,16 +175,12 @@ export class DatabaseService {
         store: { id: data.storeId } as any,
         picture: data.picture,
         created_at: new Date(),
-        completed_at: null,
-        feedback: data.feedback,
-        warranty: data.warranty,
       });
     } catch (error) {
       console.error('Erro ao criar ordem:', error);
       throw error;
     }
   }
-    */
 
   async updateAuthCode(
     userId: number,

@@ -12,6 +12,6 @@ export class CodeUser {
   @Column('datetime')
   validity: Date;
 
-  @ManyToOne(() => User, user => user.codes)
+  @ManyToOne(() => User, user => user.code)
   user: User;
 }

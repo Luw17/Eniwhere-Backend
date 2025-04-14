@@ -10,11 +10,11 @@ import { CodeAdm } from './entities/code-adm.entity';
 import { CodeStore } from './entities/code-store.entity';
 import { CodeUser } from './entities/code-user.entity';
 import { Device } from './entities/device.entity';
-import { Order } from './entities/order.entity';
-import { OrderLog } from './entities/order-log.entity';
+import { ServiceOrder } from './entities/service_order.entity';
+import { OrderLog } from './entities/order_log.entity';
 import { Store } from './entities/store.entity';
 import { User } from './entities/user.entity';
-import { UserDevice } from './entities/user-device.entity';
+import { UserHasDevice } from './entities/user_has_device.entity';
 import { Address } from './entities/address.entity';
 
 // Configuração do TypeORM
@@ -31,11 +31,11 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     CodeStore,
     CodeUser,
     Device,
-    Order,
+    UserHasDevice,
     OrderLog,
     Store,
     User,
-    UserDevice,
+    ServiceOrder,
     Address,
   ],
   synchronize: true, 

@@ -1,40 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { Address } from './address.entity';
-import { Order } from './order.entity';
-import { CodeStore } from './code-store.entity';
 
-@Entity()
+@Entity('store')
+@Unique(['id', 'user', 'password', 'code'])
 export class Store {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
   id: number;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 255 })
   email: string;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'varchar', length: 45 })
   user: string;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'varchar', length: 45 })
   password: string;
 
-  @Column('int')
+  @Column({ type: 'smallint' })
   number: number;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'varchar', length: 45 })
   code: string;
 
-  @Column('datetime')
+  @Column({ type: 'datetime' })
   validity: Date;
 
-  @ManyToOne(() => Address, address => address.stores)
+  @ManyToOne(() => Address)
+  @JoinColumn({ name: 'address_id' })
   address: Address;
-
-  @OneToMany(() => Order, order => order.store)
-  orders: Order[];
-
-  @OneToMany(() => CodeStore, code => code.store)
-  codes: CodeStore[];
 }

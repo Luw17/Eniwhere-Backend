@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OrderLog } from '../entities/order-log.entity';
+import { OrderLog } from '../entities/order_log.entity';
 
 @Injectable()
 export class OrderLogRepository {
@@ -44,9 +44,10 @@ export class OrderLogRepository {
 
   // Busca logs de um pedido específico pelo ID do pedido
   async findByOrderId(orderId: number): Promise<OrderLog[]> {
-    return await this.orderLogRepo.find({
-      where: { order: { id: orderId } },
+    return this.orderLogRepo.find({
+      where: { serviceOrder: { id: orderId } },
       relations: ['order'],
     });
   }
+  
 }
