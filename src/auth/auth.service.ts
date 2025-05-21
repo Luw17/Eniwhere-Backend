@@ -8,6 +8,8 @@ export class AuthService {
 
   ) {}
   private sessions = new Map<string, { userId: number; expiresAt: number }>();
+/*
+função usersService.updateAuthCode em manutenção
 
   async createSession(userId: number): Promise<string> {
     const authCode = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -15,7 +17,7 @@ export class AuthService {
     await this.usersService.updateAuthCode(userId, { authCode, authCodeExpiresAt: expiresAt });
     return authCode;
   }
- 
+ */
 /*
 async validateSession(authCode: string): Promise<boolean> {
     const user = await this.usersService.findOne({ where: { authCode } });

@@ -7,20 +7,22 @@ import { UsersService } from "../users/users.service";
 export class OrdensService {
     constructor(private readonly DatabaseService: DatabaseService, private readonly usersService: UsersService, private readonly emailService: EmailService) {}
         async deleteOrdem(id: number) {
-        return this.DatabaseService.deleteOrdem(id);
+        return this.DatabaseService.deleteOrder(id);
     }
     async updateOrdem(id: number, body: {}) {
-        return this.DatabaseService.updateOrdem(id,body);
+        return this.DatabaseService.updateOrder(id,body);
     }
     async getOneOrdem(id: number) {
-        return this.DatabaseService.selectFOrdens(id);
+        return this.DatabaseService.selectOrder(id);
     }
     async getAllOrdens() {
-        return this.DatabaseService.selectOrdens();
+        return this.DatabaseService.selectOrders();
     }
+    /* todo: modificar essa função para receber os dados que vão chegar do front ( body vai ser modificado) e enviar para o database service da forma certa
     async createOrdem(body: {cpf: string, aparelho: string, marca: string, modelo: string, problema: string}) {
-        return this.DatabaseService.createOrdem(body);
-    }
+        return this.DatabaseService.createOrder(body);
+    }*/
+   /* todo: essa função sera toda modificada para o novo banco de dados
     async concluirOrdem(id: number, body: {conclusao: string}) {
         await this.updateOrdem(id, {concluida: true, conclusao: body.conclusao});
         const ordem = await this.getOneOrdem(id);
@@ -33,6 +35,7 @@ export class OrdensService {
           problema: ordem.problema,
         });
       }
+        */
 }
 
 

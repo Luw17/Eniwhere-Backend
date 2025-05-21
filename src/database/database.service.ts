@@ -1,248 +1,198 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UsuariosRepository } from './repositories/usuarios.repository';
-import { OrdensRepository } from './repositories/ordens.repository';
-import { usuarios } from './entities/user.entity';
-import { MoreThan, Repository } from 'typeorm';
-import { Ordens } from './entities/ordens.entity';
+import { UserRepository } from './repositories/user.repository';
+import { OrderRepository } from './repositories/order.repository';
+import { User } from './entities/user.entity';
+import { Order } from './entities/service_order.entity';
+
+//todo: modificar quase tudo para a estrutura do novo banco
+//modificar primeiro a parte de criar ordem
 
 @Injectable()
 export class DatabaseService {
-
+  getIdByCpf(cpf: string) {
+      throw new Error("Method not implemented.");
+  }
   constructor(
-    @InjectRepository(usuarios)
-    private readonly usuariosRepository: Repository<usuarios>,
-    @InjectRepository(Ordens)
-    private readonly ordensRepository: Repository<Ordens>,
+    private readonly userRepository: UserRepository,
+    private readonly orderRepository: OrderRepository,
+    private readonly orderLogRepository: OrderRepository,
   ) {}
 
   async selectUsers() {
     try {
-      return this.usuariosRepository.find();
+      return await this.userRepository.findAll();
     } catch (error) {
-      console.error('Erro ao selecionar usuarios:', error);
+      console.error('Erro ao selecionar usuários:', error);
       return [];
     }
-}
-async validateUser(usuario: string, senha: string) {
-  const user = await this.usuariosRepository.findOne({
-      where: { usuario, senha },
-      select: ['id']
-  });
-  if (user) {
-      return user.id;
-  } else {
-      throw new UnauthorizedException('Credenciais invalidas');
   }
 
-}
-  async insertUser(user: { nome: string; cpf: string; email: string; telefone: string }) {
+  async validateUser(user: string, password: string) {
+    const users = await this.userRepository.findAll();
+    const match = users.find(u => u.user === user && u.password === password);
+    if (match) return match.id;
+    throw new UnauthorizedException('Credenciais inválidas');
+  }
+
+  async insertUser(user: Partial<User>) {
     try {
-      await this.usuariosRepository.insert(user);
+      return await this.userRepository.createUser(user);
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {
-        throw new UnauthorizedException('CPF ja  cadastrado');
-      } else {
-        throw error;
+        throw new UnauthorizedException('Documento já cadastrado');
       }
+      throw error;
     }
   }
 
-  async verifyUser(cpf: string) {
+  async verifyUser(document: string) {
     try {
-      const user = await this.usuariosRepository.findOne({ where: { cpf } });
-      return !!user;
+      const users = await this.userRepository.findAll();
+      return users.some(u => u.document === document);
     } catch (error) {
       return false;
     }
   }
 
-  /*async compareUser(user: { cpf: string; senha: string }) {
+  async verifyCode2f(user: { user: string; code: string }) {
     try {
-      const usuario = await this.usuariosRepository.findOne({ where: { cpf: user.cpf }, select: ['id', 'senha', 'codigo2f', 'tempoCodigoDoisFatores'] });
-      if (usuario && await usuario.comparePassword(user.senha)) {
-        const code = Math.floor(100000 + Math.random() * 900000);
-        usuario.codigo2f = code.toString();
-        usuario.tempoCodigoDoisFatores = new Date().getTime() + 300000;
-        await this.usuariosRepository.save(usuario);
-        return { success: true, codigo2f: code };
-      } else {
-        throw new UnauthorizedException('Credenciais invalidas');
-      }
-    } catch (error) {
-      if (error.status === 401) {
-        throw error;
-      } else {
-        throw new UnauthorizedException('Erro ao logar');
-      }
-    }
-  }
-*/
-  async verifyCode2f(user: { usuario: string; codigo2f: string }) {
-    try {
-      const usuario = await this.usuariosRepository.findOne({ where: { cpf: user.usuario, codigo2f: user.codigo2f, tempoCodigoDoisFatores: MoreThan(new Date().getTime()) } });
-      if (usuario) {
-        usuario.codigo2f = null;
-        usuario.tempoCodigoDoisFatores = null;
-        await this.usuariosRepository.save(usuario);
+      const users = await this.userRepository.findAll();
+      const match = users.find(u =>
+        u.user === user.user &&
+        u.code === user.code &&
+        u.validity &&
+        u.validity > new Date(),
+      );
+
+      if (match) {
+        match.code = null;
+        match.validity = null;
+        await this.userRepository.updateUser(match.id, match);
         return true;
-      } else {
-        return false;
       }
-    } catch (error) {
+      return false;
+    } catch {
       return false;
     }
   }
 
   async selectF(id: number) {
     try {
-      const usuario = await this.usuariosRepository.findOneOrFail({ where: { id } });
-      return usuario;
-    } catch (error) {
+      return await this.userRepository.findById(id);
+    } catch {
       return null;
     }
   }
 
-  async update(id: number, body: { nome?: string; cpf?: string; email?: string; telefone?: string }) {
+  async update(id: number, body: Partial<User>) {
     try {
-      await this.usuariosRepository.update(id, body);
+      await this.userRepository.updateUser(id, body);
     } catch (error) {
-      console.error('Erro ao atualizar usuario:', error);
+      console.error('Erro ao atualizar usuário:', error);
       throw error;
     }
   }
 
   async delete(id: number) {
-    const usuario: usuarios = await this.usuariosRepository.createQueryBuilder("usuarios")
-      .where("id = :id", { id: id })
-      .getOne();
-
-    if (usuario) {
-      await this.usuariosRepository.createQueryBuilder()
-        .delete()
-        .from(usuarios)
-        .where("id = :id", { id: id })
-        .execute();
-
-    } else {
-      console.log('User not found');
+    try {
+      await this.userRepository.deleteUser(id);
+    } catch (error) {
+      console.error('Erro ao deletar usuário:', error);
     }
   }
 
-  async selectOrdens() {
+  async selectOrders() {
     try {
-      const resposta = await this.ordensRepository.find({ where: { deleted: false, concluida: false } });
-      const respostaComUsuario = await Promise.all(resposta.map(async (ordem) => {
-        const usuario = await this.usuariosRepository.findOneOrFail({ where: { cpf: ordem.cpf } });
-        return {
-          ...ordem,
-          usuario: {
-            nome: usuario.nome
-          },
-          cpf: ordem.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
-        };
+      const orders = await this.orderRepository.findAll();
+      return orders.map(order => ({
+        ...order,
+        userName: order.userDevice?.user?.name ?? null,
       }));
-      return respostaComUsuario;
     } catch (error) {
       console.error('Erro ao selecionar ordens:', error);
       return [];
     }
   }
 
-  async selectFOrdens(id: number) {
+  async selectOrder(id: number) {
     try {
-      const ordem = await this.ordensRepository.createQueryBuilder("ordens")
-        .where("id = :id AND deleted = false", { id: id })
-        .getOne();
+      const order = await this.orderRepository.findById(id);
+      if (!order) return null;
 
-      if (ordem) {
-        const usuario = await this.usuariosRepository.findOneOrFail({ where: { cpf: ordem.cpf } });
-        return {
-          ...ordem,
-          usuario: {
-            nome: usuario.nome
-          },
-        };
-      }
-
-      return null;
+      return {
+        ...order,
+        userName: order.userDevice?.user?.name ?? null,
+      };
     } catch (error) {
       console.error('Erro ao selecionar ordem:', error);
       return null;
     }
   }
 
-  async updateOrdem(id: number, body: {}) {
+  async updateOrder(id: number, body: Partial<Order>) {
     try {
-      await this.usuariosRepository.createQueryBuilder()
-        .update(Ordens)
-        .set(body)
-        .where("id = :id AND deleted = false", { id: id })
-        .execute();
+      const order = await this.orderRepository.findById(id);
+      if (!order) return;
+      await this.orderRepository.updateOrder(id, body);
     } catch (error) {
       console.error('Erro ao atualizar ordem:', error);
     }
   }
 
-  async deleteOrdem(id: number) {
+  async deleteOrder(id: number) {
     try {
-      await this.usuariosRepository.createQueryBuilder()
-        .update(Ordens)
-        .set({ deleted: true, deletedAt: new Date() })
-        .where("id = :id", { id: id })
-        .execute();
+      const order = await this.orderRepository.findById(id);
+      if (!order) return;
+      await this.orderRepository.updateOrder(id, {
+        completed_at: new Date(),
+      });
     } catch (error) {
       console.error('Erro ao deletar ordem:', error);
     }
   }
-  async getIdByCpf(cpf: string) {
+
+  async getIdByDocument(document: string) {
     try {
-      const user = await this.usuariosRepository.findOne({ where: { cpf }, select: ['id'] });
-      return user ? user.id : null;
+      const users = await this.userRepository.findAll();
+      const user = users.find(u => u.document === document);
+      return user?.id ?? null;
     } catch (error) {
-      console.error('Error selecting user by cpf:', error);
+      console.error('Erro ao buscar usuário por documento:', error);
       return null;
     }
   }
-  async createOrdem(body: { cpf: string; aparelho: string; marca: string; modelo: string; problema: string }) {
+
+  /* todo: sera modificada para a estrutura do novo banco*/
+  async createOrder(data: {
+    userDeviceId: number;
+    storeId: number;
+    picture: string;
+
+  }) {
     try {
-      const user = await this.usuariosRepository.findOne({ where: { cpf: body.cpf } });
-      if (!user) {
-        throw new UnauthorizedException('CPF invalido');
-      }
-      await this.usuariosRepository.createQueryBuilder()
-        .insert()
-        .into(Ordens)
-        .values({
-          cpf: body.cpf,
-          aparelho: body.aparelho,
-          marca: body.marca,
-          modelo: body.modelo,
-          problema: body.problema,
-          usuarioId: user.id,
-        })
-        .execute();
+      await this.orderRepository.createOrder({
+        userDevice: { id: data.userDeviceId } as any,
+        store: { id: data.storeId } as any,
+        picture: data.picture,
+        created_at: new Date(),
+      });
     } catch (error) {
       console.error('Erro ao criar ordem:', error);
       throw error;
     }
   }
-  async updateAuthCode(userId: number, { codigoAtivo, authCodeExpiresAt }: { codigoAtivo: string; authCodeExpiresAt: number; }) {
+
+  async updateAuthCode(
+    userId: number,
+    { code, validity }: { code: string; validity: number },
+  ) {
     try {
-      await this.usuariosRepository.update(userId, { codigoAtivo, validadeCodigoAtivo: new Date(authCodeExpiresAt) });
+      await this.userRepository.updateUser(userId, {
+        code,
+        validity: new Date(validity),
+      });
     } catch (error) {
-      console.error('Error updating auth code:', error);
-    }
-  }
-  async selectCode( authCode: string) {
-    try {
-      return await this.usuariosRepository.findOne({ where: { codigoAtivo: authCode } });
-    } catch (error) {
-      console.error('Error selecting code:', error);
-      return null;
+      console.error('Erro ao atualizar código de autenticação:', error);
     }
   }
 }
-
-
-

@@ -1,33 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Store } from './store.entity';
-import { User } from './user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
-@Entity()
+@Entity('address')
+@Unique(['id', 'postal_code'])
 export class Address {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
   id: number;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 50, nullable: true })
   postal_code: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 45 })
   country: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 45 })
   state: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 45 })
   city: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 45 })
   neighborhood: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 255 })
   address: string;
-
-  @OneToMany(() => Store, store => store.address)
-  stores: Store[];
-
-  @OneToMany(() => User, user => user.address)
-  users: User[];
 }
