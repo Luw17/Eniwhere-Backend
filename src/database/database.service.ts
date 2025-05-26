@@ -1,8 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
-import { OrderRepository } from './repositories/order.repository';
+import { ServiceOrderRepository } from './repositories/order.repository';
 import { User } from './entities/user.entity';
-import { Order } from './entities/service_order.entity';
+import { OrderLog } from './entities/order_log.entity';
+import { UserDeviceRepository } from './repositories/user-device.repository';
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
@@ -14,8 +15,9 @@ export class DatabaseService {
   }
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly orderRepository: OrderRepository,
-    private readonly orderLogRepository: OrderRepository,
+    private readonly orderRepository: ServiceOrderRepository,
+    private readonly orderLogRepository: OrderLog,
+    private readonly userDeviceRepository: UserDeviceRepository,
   ) {}
 
   async selectUsers() {
@@ -163,19 +165,26 @@ export class DatabaseService {
   }
 
   /* todo: sera modificada para a estrutura do novo banco*/
-  async createOrder(data: {
-    userDeviceId: number;
-    storeId: number;
-    picture: string;
-
-  }) {
+  async createOrder(data) {
+    if(data.picture){
+      // Aqui você pode implementar a lógica para salvar a imagem
+      //usando o repositorio de imagem e salvando o caminho no banco
+    }
+    if(!data.userHasDeviceId){ 
+      if(!data.userId && !data.deviceId){
+        throw new Error('É necessário informar userId ou deviceId para criar uma ordem.');
+      }
+      try{
+        data.userHasDeviceId = await this.userDeviceRepository.createUserDevice({ user: data.userId, device: data.deviceId });
+      }catch(error){
+        console.error('não foi possível criar a user has device:', error);
+        throw new Error('não foi possível criar a user has device');
+      }
+    }
     try {
-      await this.orderRepository.createOrder({
-        userDevice: { id: data.userDeviceId } as any,
-        store: { id: data.storeId } as any,
-        picture: data.picture,
-        created_at: new Date(),
-      });
+      //verificar se não da ruim mandar o user id e o deviceId
+      const newOrder = await this.orderRepository.createOrder(data);
+      return newOrder;
     } catch (error) {
       console.error('Erro ao criar ordem:', error);
       throw error;
@@ -196,3 +205,4 @@ export class DatabaseService {
     }
   }
 }
+

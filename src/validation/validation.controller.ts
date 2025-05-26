@@ -33,21 +33,18 @@ export class ValidationController {
     }
     return await this.ordensService.updateOrdem(id, body);
   }
-/*função em manutenção
-    sujeita a troca de nome e valores de entrada
+    /*sujeita a troca de nome e valores de entrada*/
   @Post('ordens')
-  async createOrdem(
-    @Body(ValidateCpfPipe) body: { cpf: string; aparelho: string; marca: string; modelo: string; problema: string }
+  async createOrdem( data: {workerId:number,cpf:string,deviceId:number,userId:number}
   ) {
-    const { cpf } = body;
-    console.log('entrou no post de ordem ' + cpf);
-    const user = await this.usersService.verifyUser(cpf);
+    const user = await this.usersService.verifyUser(data.cpf);
     if (!user) {
       throw new UnauthorizedException('CPF inválido');
     }
-    return await this.ordensService.createOrdem(body);
+    data.userId = await this.usersService.getIdByCpf(data.cpf);
+    return await this.ordensService.createOrdem(data);
   }
-  */
+
   @Delete('ordens/:id')
   async deleteOrdem(@Param('id') id: number) {
     return await this.ordensService.deleteOrdem(id);

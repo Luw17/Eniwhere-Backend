@@ -50,6 +50,7 @@ export class UsersService {
     async getIdByCpf(cpf: string){
         return this.databaseService.getIdByDocument(cpf);
     }
+    
     /*todo: acertar a parte de authcode
     async updateAuthCode(userId: number, arg1: { authCode: string; authCodeExpiresAt: number; }) {
         return this.databaseService.updateAuthCode(userId, {codigoAtivo: arg1.authCode, authCodeExpiresAt: arg1.authCodeExpiresAt});

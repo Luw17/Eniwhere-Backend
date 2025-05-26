@@ -18,10 +18,11 @@ export class OrdensService {
     async getAllOrdens() {
         return this.DatabaseService.selectOrders();
     }
-    /* todo: modificar essa função para receber os dados que vão chegar do front ( body vai ser modificado) e enviar para o database service da forma certa
-    async createOrdem(body: {cpf: string, aparelho: string, marca: string, modelo: string, problema: string}) {
-        return this.DatabaseService.createOrder(body);
-    }*/
+    /* todo: modificar essa função para receber os dados que vão chegar do front ( body vai ser modificado) e enviar para o database service da forma certa*/
+    async createOrdem(data: {workerId:number,userId:number,deviceId:number,cpf:string}) {
+        console.log('Creating order with data:', data);
+        return this.DatabaseService.createOrder(data);
+    }/**/
    /* todo: essa função sera toda modificada para o novo banco de dados
     async concluirOrdem(id: number, body: {conclusao: string}) {
         await this.updateOrdem(id, {concluida: true, conclusao: body.conclusao});
