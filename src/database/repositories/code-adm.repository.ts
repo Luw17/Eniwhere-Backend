@@ -1,43 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CodeAdm } from '../entities/code-adm.entity';
+import { TwoFCodeAdm } from '../entities/code-adm.entity';
 
 @Injectable()
 export class CodeAdmRepository {
   constructor(
-    @InjectRepository(CodeAdm)
-    private readonly codeAdmRepo: Repository<CodeAdm>,
+    @InjectRepository(TwoFCodeAdm)
+    private readonly codeAdmRepo: Repository<TwoFCodeAdm>,
   ) {}
 
-  async findAll(): Promise<CodeAdm[]> {
-    return await this.codeAdmRepo.find({
-      relations: ['adm'], // se quiser carregar o adm junto
+  findAll(): Promise<TwoFCodeAdm[]> {
+    return this.codeAdmRepo.find({
+      relations: ['adm'], // carregar a entidade adm relacionada
     });
   }
 
-  async findById(id: number): Promise<CodeAdm | null> {
-    return await this.codeAdmRepo.findOne({
+  findById(id: number): Promise<TwoFCodeAdm | null> {
+    return this.codeAdmRepo.findOne({
       where: { id },
       relations: ['adm'],
     });
   }
 
-  async findByCode(code: string): Promise<CodeAdm | null> {
-    return await this.codeAdmRepo.findOne({
+  findByCode(code: string): Promise<TwoFCodeAdm | null> {
+    return this.codeAdmRepo.findOne({
       where: { code },
       relations: ['adm'],
     });
   }
 
-  async createCode(codeData: Partial<CodeAdm>): Promise<CodeAdm> {
+  async createCode(codeData: Partial<TwoFCodeAdm>): Promise<TwoFCodeAdm> {
     const newCode = this.codeAdmRepo.create(codeData);
-    return await this.codeAdmRepo.save(newCode);
+    return this.codeAdmRepo.save(newCode);
   }
 
-  async updateCode(id: number, codeData: Partial<CodeAdm>): Promise<CodeAdm> {
+  async updateCode(id: number, codeData: Partial<TwoFCodeAdm>): Promise<TwoFCodeAdm | null> {
     await this.codeAdmRepo.update(id, codeData);
-    return await this.findById(id);
+    return this.findById(id);
   }
 
   async deleteCode(id: number): Promise<void> {

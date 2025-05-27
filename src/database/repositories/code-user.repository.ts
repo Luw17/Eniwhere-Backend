@@ -1,24 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CodeUser } from '../entities/code-user.entity';
+import { TwoFCode } from '../entities/code-user.entity';
 
 @Injectable()
 export class CodeUserRepository {
   constructor(
-    @InjectRepository(CodeUser)
-    private readonly codeUserRepo: Repository<CodeUser>,
+    @InjectRepository(TwoFCode)
+    private readonly codeUserRepo: Repository<TwoFCode>,
   ) {}
 
   // Busca todos os códigos com o usuário associado
-  async findAll(): Promise<CodeUser[]> {
+  async findAll(): Promise<TwoFCode[]> {
     return await this.codeUserRepo.find({
       relations: ['user'], // Agora a relação está com 'user'
     });
   }
 
   // Busca um código pelo ID
-  async findById(id: number): Promise<CodeUser | null> {
+  async findById(id: number): Promise<TwoFCode | null> {
     return await this.codeUserRepo.findOne({
       where: { id },
       relations: ['user'], // Relaciona o código ao usuário
@@ -26,7 +26,7 @@ export class CodeUserRepository {
   }
 
   // Busca um código pelo código em si
-  async findByCode(code: string): Promise<CodeUser | null> {
+  async findByCode(code: string): Promise<TwoFCode | null> {
     return await this.codeUserRepo.findOne({
       where: { code },
       relations: ['user'], // Relaciona o código ao usuário
@@ -34,13 +34,13 @@ export class CodeUserRepository {
   }
 
   // Criação de um novo código de usuário
-  async createCode(data: Partial<CodeUser>): Promise<CodeUser> {
+  async createCode(data: Partial<TwoFCode>): Promise<TwoFCode> {
     const newCode = this.codeUserRepo.create(data);
     return await this.codeUserRepo.save(newCode);
   }
 
   // Atualização de um código existente
-  async updateCode(id: number, data: Partial<CodeUser>): Promise<CodeUser> {
+  async updateCode(id: number, data: Partial<TwoFCode>): Promise<TwoFCode> {
     await this.codeUserRepo.update(id, data);
     return await this.findById(id);
   }

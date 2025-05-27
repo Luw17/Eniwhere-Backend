@@ -4,7 +4,7 @@ import { Device } from './device.entity';
 
 @Entity('user_has_device')
 export class UserHasDevice {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => User)

@@ -1,28 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { ServiceOrder } from './service_order.entity';
+import { Order } from './service_order.entity';
 
 @Entity('order_log')
 export class OrderLog {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => ServiceOrder)
+  @ManyToOne(() => Order)
   @JoinColumn({ name: 'order_id' })
-  serviceOrder: ServiceOrder;
+  order: Order;
 
-  @Column({ type: 'float' })
-  cost: number;
+  @Column({ type: 'text' })
+  cost: string;
 
-  @Column({ type: 'float' })
-  work: number;
+  @Column({ type: 'text' })
+  work: string;
 
-  @Column({ type: 'varchar', length: 45 })
-  order_status: string;
+  @Column({ type: 'text' })
+  status: string;
 
   @Column({ type: 'date' })
   deadline: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'text' })
   problem: string;
 
   @Column({ type: 'datetime' })

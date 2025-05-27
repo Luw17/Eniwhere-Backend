@@ -1,26 +1,27 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity('address')
-@Unique(['id', 'postal_code'])
+@Unique(['id'])
+@Unique(['postalCode'])
 export class Address {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  postal_code: string;
+  @Column({ name: 'postal_code', type: 'text' })
+  postalCode: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   country: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   state: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   city: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   neighborhood: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'text' })
   address: string;
 }

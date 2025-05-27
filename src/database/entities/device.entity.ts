@@ -1,16 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity('device')
+@Unique(['id'])
 export class Device {
-  @PrimaryGeneratedColumn({ type: 'smallint', unsigned: true })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   device: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   model: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   brand: string;
 }

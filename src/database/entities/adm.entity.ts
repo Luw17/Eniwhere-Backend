@@ -1,23 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { CodeAdm } from './code-adm.entity';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
-@Entity()
+@Entity('adm')
+@Unique(['user'])
+@Unique(['password'])
+@Unique(['code'])
 export class Adm {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'text' })
   user: string;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'text' })
   password: string;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'text' })
   code: string;
 
-  @Column('datetime')
+  @Column({ type: 'datetime' })
   validity: Date;
-
-  @OneToMany(() => CodeAdm, code => code.adm)
-  codes: CodeAdm[];
 }

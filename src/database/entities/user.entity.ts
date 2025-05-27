@@ -1,33 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { Address } from './address.entity';
 
 @Entity('user')
+@Unique(['document'])
+@Unique(['email'])
+@Unique(['user'])
+@Unique(['password'])
 export class User {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ length: 45 })
   document: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ length: 45, nullable: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ length: 45 })
   email: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({ length: 45, nullable: true })
   phone: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ length: 45 })
   user: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ length: 45 })
   password: string;
 
-  @Column({ type: 'smallint', nullable: true })
-  number: number;
+  @Column({ length: 45, nullable: true })
+  number: string;
 
-  @Column({ type: 'varchar', length: 45, nullable: true })
+  @Column({ length: 45, nullable: true })
   code: string;
 
   @Column({ type: 'datetime', nullable: true })

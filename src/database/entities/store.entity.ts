@@ -2,27 +2,33 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique }
 import { Address } from './address.entity';
 
 @Entity('store')
-@Unique(['id', 'user', 'password', 'code'])
+@Unique(['document'])
+@Unique(['user'])
+@Unique(['password'])
+@Unique(['code'])
 export class Store {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'text' })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ length: 45 })
+  document: string;
+
+  @Column({ type: 'text' })
   email: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   user: string;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   password: string;
 
-  @Column({ type: 'smallint' })
+  @Column({ type: 'int' })
   number: number;
 
-  @Column({ type: 'varchar', length: 45 })
+  @Column({ type: 'text' })
   code: string;
 
   @Column({ type: 'datetime' })
@@ -31,4 +37,13 @@ export class Store {
   @ManyToOne(() => Address)
   @JoinColumn({ name: 'address_id' })
   address: Address;
+
+  @Column({ type: 'datetime', name: 'sub_end' })
+  subEnd: Date;
+
+  @Column({ type: 'tinyint', default: 0 })
+  analitcs: number;
+
+  @Column({ length: 45, nullable: true })
+  storecol: string;
 }

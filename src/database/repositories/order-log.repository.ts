@@ -11,15 +11,15 @@ export class OrderLogRepository {
   ) {}
 
   // Busca todos os logs de pedidos com o relacionamento de Order
-  async findAll(): Promise<OrderLog[]> {
-    return await this.orderLogRepo.find({
+  findAll(): Promise<OrderLog[]> {
+    return this.orderLogRepo.find({
       relations: ['order'], // Relaciona o log com o pedido
     });
   }
 
   // Busca um log pelo ID
-  async findById(id: number): Promise<OrderLog | null> {
-    return await this.orderLogRepo.findOne({
+  findById(id: number): Promise<OrderLog | null> {
+    return this.orderLogRepo.findOne({
       where: { id },
       relations: ['order'], // Relaciona o log com o pedido
     });
@@ -28,13 +28,13 @@ export class OrderLogRepository {
   // Cria um novo log de pedido
   async createOrderLog(data: Partial<OrderLog>): Promise<OrderLog> {
     const newOrderLog = this.orderLogRepo.create(data);
-    return await this.orderLogRepo.save(newOrderLog);
+    return this.orderLogRepo.save(newOrderLog);
   }
 
   // Atualiza um log de pedido existente
-  async updateOrderLog(id: number, data: Partial<OrderLog>): Promise<OrderLog> {
+  async updateOrderLog(id: number, data: Partial<OrderLog>): Promise<OrderLog | null> {
     await this.orderLogRepo.update(id, data);
-    return await this.findById(id);
+    return this.findById(id);
   }
 
   // Deleta um log de pedido pelo ID
@@ -43,11 +43,10 @@ export class OrderLogRepository {
   }
 
   // Busca logs de um pedido específico pelo ID do pedido
-  async findByOrderId(orderId: number): Promise<OrderLog[]> {
+  findByOrderId(orderId: number): Promise<OrderLog[]> {
     return this.orderLogRepo.find({
-      where: { serviceOrder: { id: orderId } },
+      where: { order: { id: orderId } },
       relations: ['order'],
     });
   }
-  
 }

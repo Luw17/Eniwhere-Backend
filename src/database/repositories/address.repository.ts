@@ -10,31 +10,31 @@ export class AddressRepository {
     private readonly addressRepo: Repository<Address>,
   ) {}
 
-  async findAll(): Promise<Address[]> {
-    return await this.addressRepo.find();
+  findAll(): Promise<Address[]> {
+    return this.addressRepo.find();
   }
 
-  async findById(id: number): Promise<Address | null> {
-    return await this.addressRepo.findOneBy({ id });
+  findById(id: number): Promise<Address | null> {
+    return this.addressRepo.findOneBy({ id });
   }
 
-  async findByPostalCode(postalCode: string): Promise<Address[]> {
-    return await this.addressRepo.find({
-      where: { postal_code: postalCode },
+  findByPostalCode(postalCode: string): Promise<Address[]> {
+    return this.addressRepo.find({
+      where: { postalCode }, // Usar nome da propriedade da entidade
     });
   }
 
   async createAddress(address: Partial<Address>): Promise<Address> {
     const newAddress = this.addressRepo.create(address);
-    return await this.addressRepo.save(newAddress);
+    return this.addressRepo.save(newAddress);
   }
 
-  async updateAddress(id: number, data: Partial<Address>): Promise<Address> {
+  async updateAddress(id: number, data: Partial<Address>): Promise<Address | null> {
     await this.addressRepo.update(id, data);
-    return await this.findById(id);
+    return this.findById(id);
   }
 
-  async deleteAddress(id: number): Promise<void> {
-    await this.addressRepo.delete(id);
+  deleteAddress(id: number): Promise<void> {
+    return this.addressRepo.delete(id).then(() => {});
   }
 }

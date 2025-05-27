@@ -11,23 +11,23 @@ export class DeviceRepository {
   ) {}
 
   // Busca todos os dispositivos com a relação de UserDevice
-  async findAll(): Promise<Device[]> {
-    return await this.deviceRepo.find({
+  findAll(): Promise<Device[]> {
+    return this.deviceRepo.find({
       relations: ['userDevices'], // Inclui os dispositivos de usuários
     });
   }
 
   // Busca um dispositivo pelo ID
-  async findById(id: number): Promise<Device | null> {
-    return await this.deviceRepo.findOne({
+  findById(id: number): Promise<Device | null> {
+    return this.deviceRepo.findOne({
       where: { id },
       relations: ['userDevices'], // Relaciona o dispositivo com os usuários
     });
   }
 
   // Busca um dispositivo pelo nome
-  async findByDeviceName(device: string): Promise<Device | null> {
-    return await this.deviceRepo.findOne({
+  findByDeviceName(device: string): Promise<Device | null> {
+    return this.deviceRepo.findOne({
       where: { device },
       relations: ['userDevices'], // Relaciona o dispositivo com os usuários
     });
@@ -36,13 +36,13 @@ export class DeviceRepository {
   // Criação de um novo dispositivo
   async createDevice(data: Partial<Device>): Promise<Device> {
     const newDevice = this.deviceRepo.create(data);
-    return await this.deviceRepo.save(newDevice);
+    return this.deviceRepo.save(newDevice);
   }
 
   // Atualização de um dispositivo existente
-  async updateDevice(id: number, data: Partial<Device>): Promise<Device> {
+  async updateDevice(id: number, data: Partial<Device>): Promise<Device | null> {
     await this.deviceRepo.update(id, data);
-    return await this.findById(id);
+    return this.findById(id);
   }
 
   // Deleta um dispositivo pelo ID

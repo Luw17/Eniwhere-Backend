@@ -2,17 +2,17 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Store } from './store.entity';
 
 @Entity('workers')
-export class Worker {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true })
+export class Workers {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 45, nullable: true })
+  @Column({ length: 45, nullable: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 45, nullable: true })
+  @Column({ length: 45, nullable: true })
   user: string;
 
-  @Column({ type: 'varchar', length: 45, nullable: true })
+  @Column({ length: 45, nullable: true })
   password: string;
 
   @ManyToOne(() => Store)

@@ -2,10 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { ServiceOrderRepository } from './repositories/order.repository';
 import { User } from './entities/user.entity';
-import { OrderLog } from './entities/order_log.entity';
 import { UserDeviceRepository } from './repositories/user-device.repository';
-import { ServiceOrder } from './entities/service_order.entity';
 import { OrderLogRepository } from './repositories/order-log.repository';
+import { Order } from './entities/service_order.entity'; 
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
@@ -133,7 +132,7 @@ export class DatabaseService {
     }
   }
 
-  async updateOrder(id: number, body: Partial<ServiceOrder>) {
+  async updateOrder(id: number, body: Partial<Order>) {
     try {
       const order = await this.orderRepository.findById(id);
       if (!order) return;
@@ -148,7 +147,7 @@ export class DatabaseService {
       const order = await this.orderRepository.findById(id);
       if (!order) return;
       await this.orderRepository.updateOrder(id, {
-        completed_at: new Date(),
+        completedAt: new Date(),
       });
     } catch (error) {
       console.error('Erro ao deletar ordem:', error);

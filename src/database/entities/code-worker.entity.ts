@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Adm } from './adm.entity';
+import { Workers } from './worker.entity';
 
-@Entity('2fcode_adm')
+@Entity('2fcode_workers')
 @Unique(['code'])
-export class TwoFCodeAdm {
+export class TwoFCodeWorkers {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -13,7 +13,7 @@ export class TwoFCodeAdm {
   @Column({ type: 'datetime' })
   validity: Date;
 
-  @ManyToOne(() => Adm)
-  @JoinColumn({ name: 'adm_id' })
-  adm: Adm;
+  @ManyToOne(() => Workers)
+  @JoinColumn({ name: 'workers_id' })
+  workers: Workers;
 }

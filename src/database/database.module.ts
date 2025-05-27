@@ -5,7 +5,7 @@ import { DatabaseService } from './database.service';
 
 // Entidades necessárias
 import { User } from './entities/user.entity';
-import { ServiceOrder } from './entities/service_order.entity';
+import { Order } from './entities/service_order.entity';
 import { UserHasDevice } from './entities/user_has_device.entity';
 import { OrderLog } from './entities/order_log.entity';
 
@@ -13,14 +13,14 @@ import { OrderLog } from './entities/order_log.entity';
 import { UserRepository } from './repositories/user.repository';
 import { ServiceOrderRepository } from './repositories/order.repository';
 import { UserDeviceRepository } from './repositories/user-device.repository';
-import { OrderLogRepository } from './repositories/order-log.repository'; // Adicionado corretamente
+import { OrderLogRepository } from './repositories/order-log.repository';
 
 @Module({
   imports: [
    TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([
       User,
-      ServiceOrder,
+      Order,
       UserHasDevice,
       OrderLog,
     ]),

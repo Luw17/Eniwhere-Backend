@@ -1,17 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { Store } from './store.entity';
 
-@Entity()
-export class CodeStore {
+@Entity('2fcode_store')
+@Unique(['code'])
+export class TwoFCodeStore {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text', { unique: true })
+  @Column({ type: 'text' })
   code: string;
 
-  @Column('datetime')
+  @Column({ type: 'datetime' })
   validity: Date;
 
-  @ManyToOne(() => Store, store => store.code)
+  @ManyToOne(() => Store)
+  @JoinColumn({ name: 'store_id' })
   store: Store;
 }
