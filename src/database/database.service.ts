@@ -4,6 +4,8 @@ import { ServiceOrderRepository } from './repositories/order.repository';
 import { User } from './entities/user.entity';
 import { OrderLog } from './entities/order_log.entity';
 import { UserDeviceRepository } from './repositories/user-device.repository';
+import { ServiceOrder } from './entities/service_order.entity';
+import { OrderLogRepository } from './repositories/order-log.repository';
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
@@ -16,7 +18,7 @@ export class DatabaseService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly orderRepository: ServiceOrderRepository,
-    private readonly orderLogRepository: OrderLog,
+    private readonly orderLogRepository: OrderLogRepository,
     private readonly userDeviceRepository: UserDeviceRepository,
   ) {}
 
@@ -108,7 +110,7 @@ export class DatabaseService {
       const orders = await this.orderRepository.findAll();
       return orders.map(order => ({
         ...order,
-        userName: order.userDevice?.user?.name ?? null,
+        userName: order.userHasDevice?.user?.name ?? null,
       }));
     } catch (error) {
       console.error('Erro ao selecionar ordens:', error);
@@ -123,7 +125,7 @@ export class DatabaseService {
 
       return {
         ...order,
-        userName: order.userDevice?.user?.name ?? null,
+        userName: order.userHasDevice?.user?.name ?? null,
       };
     } catch (error) {
       console.error('Erro ao selecionar ordem:', error);
@@ -131,7 +133,7 @@ export class DatabaseService {
     }
   }
 
-  async updateOrder(id: number, body: Partial<Order>) {
+  async updateOrder(id: number, body: Partial<ServiceOrder>) {
     try {
       const order = await this.orderRepository.findById(id);
       if (!order) return;

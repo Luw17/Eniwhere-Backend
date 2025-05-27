@@ -9,19 +9,19 @@ export class AuthController {
     @Post('login')
     async login(@Body() loginDto: LoginDto) {
       console.log('teste');
-      const userId = await this.authService.validateUser(loginDto);
+      /*const userId = await this.authService.validateUser(loginDto);
       
       if (userId === -1 || userId == null) {
         return { message: 'credenciais erradas' };
       }
       const authCode = await this.authService.createSession(userId);
       console.log(authCode);
-      return { message: 'Login bem-sucedido', authCode };
+      return { message: 'Login bem-sucedido', authCode };*/
     }
   
     @Post('logout')
     logout(@Body('authCode') authCode: string) {
-      this.authService.revokeSession(authCode);
+     // this.authService.revokeSession(authCode);
       return { message: 'Logout realizado com sucesso' };
     }
   }

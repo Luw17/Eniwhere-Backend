@@ -10,13 +10,14 @@ export class AuthMiddleware implements NestMiddleware {
         if (!authCode) {
             return res.status(401).send({ error: 'authCode não encontrado' });
         }
-        const userId = await this.usersService.findOne(authCode);//manutenção na função sujeito a mudanças
+       // const userId = await this.usersService.findOne(authCode);//manutenção na função sujeito a mudanças
+       /*
         if (!userId) {
             return res.status(401).send({ error: 'authCode inválido' });
         }
         req.userId = userId;
         console.log('AuthMiddleware executado');
-        next();
+        next();*/ 
     }
-        
+       
 }

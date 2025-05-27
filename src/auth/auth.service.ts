@@ -27,7 +27,7 @@ async validateSession(authCode: string): Promise<boolean> {
     return true;
   }
   */
- 
+ /*
   async validateUser(user: { usuario: string; senha: string }) {
    
     const userId = await this.usersService.validateUser(user.usuario, user.senha);
@@ -42,5 +42,5 @@ async validateSession(authCode: string): Promise<boolean> {
   revokeSession(authCode: string): void {
     this.sessions.delete(authCode);
   }
-
+*/
 }

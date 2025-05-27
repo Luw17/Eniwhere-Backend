@@ -3,37 +3,37 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './typeorm.config';
 import { DatabaseService } from './database.service';
 
-// Importação das entidades
-import { Adm } from './entities/adm.entity';
-import { CodeAdm } from './entities/code-adm.entity';
-import { CodeStore } from './entities/code-store.entity';
-import { CodeUser } from './entities/code-user.entity';
-import { Device } from './entities/device.entity';
-import { ServiceOrder } from './entities/service_order.entity';
-import { OrderLog } from './entities/order_log.entity';
-import { Store } from './entities/store.entity';
+// Entidades necessárias
 import { User } from './entities/user.entity';
+import { ServiceOrder } from './entities/service_order.entity';
 import { UserHasDevice } from './entities/user_has_device.entity';
-import { Address } from './entities/address.entity';
+import { OrderLog } from './entities/order_log.entity';
+
+// Repositórios utilizados
+import { UserRepository } from './repositories/user.repository';
+import { ServiceOrderRepository } from './repositories/order.repository';
+import { UserDeviceRepository } from './repositories/user-device.repository';
+import { OrderLogRepository } from './repositories/order-log.repository'; // Adicionado corretamente
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeOrmConfig), // Configuração do TypeORM
+   TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([
-      Adm,
-      CodeAdm,
-      CodeStore,
-      CodeUser,
-      Device,
-      ServiceOrder,
-      OrderLog,
-      Store,
       User,
+      ServiceOrder,
       UserHasDevice,
-      Address,
-    ]), // Repositórios das entidades
+      OrderLog,
+    ]),
   ],
-  providers: [DatabaseService],
-  exports: [DatabaseService, TypeOrmModule], // Exporta os serviços e o módulo TypeOrmModule
+  providers: [
+    DatabaseService,
+    UserRepository,
+    ServiceOrderRepository,
+    UserDeviceRepository,
+    OrderLogRepository,
+  ],
+  exports: [
+    DatabaseService,
+  ],
 })
 export class DatabaseModule {}
