@@ -1,20 +1,20 @@
-# Usa uma imagem leve do Node
-FROM node:20-alpine
+# Usa imagem leve do Node
+FROM node:20
 
-# Define a pasta de trabalho dentro do container
+# Define o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copia os arquivos de dependência
+# Copia os arquivos de dependências primeiro
 COPY package.json package-lock.json ./
 
-# Instala as dependências de forma limpa e confiável
+# Instala as dependências com npm ci (clean install)
 RUN npm ci
 
-# Copia o restante do código do projeto
+# Copia o restante dos arquivos da aplicação
 COPY . .
 
-# Expõe a porta que o NestJS usa por padrão (ajuste conforme sua config)
+# Expõe a porta padrão do NestJS
 EXPOSE 3000
 
-# Comando para rodar o NestJS com hot reload
+# Comando para rodar com hot reload e polling para funcionar com volumes bind
 CMD ["npm", "run", "start:dev"]
