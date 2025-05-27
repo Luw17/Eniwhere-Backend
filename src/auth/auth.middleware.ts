@@ -7,6 +7,8 @@ export class AuthMiddleware implements NestMiddleware {
     
     async use(req: any, res: any, next: () => void) {
         const { authCode } = req.query;
+
+        /*
         if (!authCode) {
             return res.status(401).send({ error: 'authCode não encontrado' });
         }

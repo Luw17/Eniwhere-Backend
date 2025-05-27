@@ -45,7 +45,7 @@ export class OrderLogRepository {
   // Busca logs de um pedido específico pelo ID do pedido
   findByOrderId(orderId: number): Promise<OrderLog[]> {
     return this.orderLogRepo.find({
-      where: { order: { id: orderId } },
+      where: { serviceOrder: { id: orderId } },
       relations: ['order'],
     });
   }

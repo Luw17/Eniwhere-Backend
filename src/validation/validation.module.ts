@@ -12,7 +12,5 @@ import { AuthModule } from "../auth/auth.module";
     exports: []
 })
 export class validationModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(AuthMiddleware).forRoutes('eniwhere');
-    }
+
 }

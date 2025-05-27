@@ -1,49 +1,57 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, JoinColumn } from 'typeorm';
 import { Address } from './address.entity';
+import { StoreWorker } from './worker.entity';
+import { Store2faCode } from './code-store.entity';
 
-@Entity('store')
+@Entity('stores')
 @Unique(['document'])
-@Unique(['user'])
-@Unique(['password'])
+@Unique(['username'])
+@Unique(['user_password'])
 @Unique(['code'])
 export class Store {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
+  @Column('text')
   name: string;
 
   @Column({ length: 45 })
   document: string;
 
-  @Column({ type: 'text' })
+  @Column('text')
   email: string;
 
-  @Column({ type: 'text' })
-  user: string;
+  @Column('text')
+  username: string;
 
-  @Column({ type: 'text' })
-  password: string;
+  @Column('text')
+  user_password: string;
 
-  @Column({ type: 'int' })
+  @Column('int')
   number: number;
 
-  @Column({ type: 'text' })
+  @Column('text')
   code: string;
 
-  @Column({ type: 'datetime' })
+  @Column('datetime')
   validity: Date;
 
-  @ManyToOne(() => Address)
+  @ManyToOne(() => Address, address => address.stores, { eager: true })
   @JoinColumn({ name: 'address_id' })
   address: Address;
 
-  @Column({ type: 'datetime', name: 'sub_end' })
-  subEnd: Date;
+  @Column('datetime')
+  subscription_end: Date;
 
-  @Column({ type: 'tinyint', default: 0 })
-  analitcs: number;
+  @Column('tinyint', { default: 0 })
+  analytics: number;
 
   @Column({ length: 45, nullable: true })
-  storecol: string;
+  storecol?: string;
+
+  @OneToMany(() => StoreWorker, worker => worker.store)
+  workers: StoreWorker[];
+
+  @OneToMany(() => Store2faCode, code => code.store)
+  twoFaCodes: Store2faCode[];
 }

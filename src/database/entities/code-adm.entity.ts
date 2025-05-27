@@ -1,19 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Adm } from './adm.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
+import { Admin } from './adm.entity';
 
-@Entity('2fcode_adm')
+@Entity('admin_2fa_codes')
 @Unique(['code'])
-export class TwoFCodeAdm {
+export class Admin2faCode {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
+  @Column('text')
   code: string;
 
-  @Column({ type: 'datetime' })
+  @Column('datetime')
   validity: Date;
 
-  @ManyToOne(() => Adm)
-  @JoinColumn({ name: 'adm_id' })
-  adm: Adm;
+  @ManyToOne(() => Admin, admin => admin.twoFaCodes, { eager: true })
+  @JoinColumn({ name: 'admin_id' })
+  admin: Admin;
 }

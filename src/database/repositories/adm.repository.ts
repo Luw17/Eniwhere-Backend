@@ -1,42 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Adm } from '../entities/adm.entity';
+import { Admin } from '../entities/adm.entity';
 
 @Injectable()
 export class AdmRepository {
   constructor(
-    @InjectRepository(Adm)
-    private readonly admRepo: Repository<Adm>,
+    @InjectRepository(Admin)
+    private readonly admRepo: Repository<Admin>,
   ) {}
 
-  findAll(): Promise<Adm[]> {
-    return this.admRepo.find();
+  async findAll(): Promise<Admin[]> {
+    return await this.admRepo.find();
   }
 
-  findById(id: number): Promise<Adm | null> {
-    return this.admRepo.findOneBy({ id });
+  async findById(id: number): Promise<Admin | null> {
+    return await this.admRepo.findOneBy({ id });
   }
 
-  findByUser(user: string): Promise<Adm | null> {
-    return this.admRepo.findOneBy({ user });
+  async findByUser(username: string): Promise<Admin | null> {
+    return await this.admRepo.findOneBy({ username});
   }
 
-  findByCode(code: string): Promise<Adm | null> {
-    return this.admRepo.findOneBy({ code });
+  async findByCode(code: string): Promise<Admin | null> {
+    return await this.admRepo.findOneBy({ code });
   }
 
-  async createAdm(data: Partial<Adm>): Promise<Adm> {
+  async createAdm(data: Partial<Admin>): Promise<Admin> {
     const newAdm = this.admRepo.create(data);
-    return this.admRepo.save(newAdm);
+    return await this.admRepo.save(newAdm);
   }
 
-  async updateAdm(id: number, data: Partial<Adm>): Promise<Adm | null> {
+  async updateAdm(id: number, data: Partial<Admin>): Promise<Admin> {
     await this.admRepo.update(id, data);
-    return this.findById(id);
+    return await this.findById(id);
   }
 
-  deleteAdm(id: number): Promise<void> {
-    return this.admRepo.delete(id).then(() => {});
+  async deleteAdm(id: number): Promise<void> {
+    await this.admRepo.delete(id);
   }
 }

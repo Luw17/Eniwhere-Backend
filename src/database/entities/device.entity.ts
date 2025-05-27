@@ -1,17 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Unique } from 'typeorm';
+import { UserDevice } from './user_has_device.entity';
 
-@Entity('device')
+@Entity('devices')
 @Unique(['id'])
 export class Device {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
-  device: string;
+  @Column('text')
+  device_name: string;
 
-  @Column({ type: 'text' })
+  @Column('text')
   model: string;
 
-  @Column({ type: 'text' })
+  @Column('text')
   brand: string;
+
+  @OneToMany(() => UserDevice, userDevice => userDevice.device)
+  userDevices: UserDevice[];
 }

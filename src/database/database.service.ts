@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
-import { ServiceOrderRepository } from './repositories/order.repository';
-import { User } from './entities/user.entity';
+import { OrderRepository } from './repositories/order.repository';
+import { AppUser } from './entities/user.entity';
 import { UserDeviceRepository } from './repositories/user-device.repository';
 import { OrderLogRepository } from './repositories/order-log.repository';
-import { Order } from './entities/service_order.entity'; 
+import { ServiceOrder } from './entities/service_order.entity'; 
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
@@ -16,7 +16,7 @@ export class DatabaseService {
   }
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly orderRepository: ServiceOrderRepository,
+    private readonly orderRepository: OrderRepository,
     private readonly orderLogRepository: OrderLogRepository,
     private readonly userDeviceRepository: UserDeviceRepository,
   ) {}
@@ -37,7 +37,7 @@ export class DatabaseService {
     throw new UnauthorizedException('Credenciais inválidas');
   }
 
-  async insertUser(user: Partial<User>) {
+  async insertUser(user: Partial<AppUser>) {
     try {
       return await this.userRepository.createUser(user);
     } catch (error) {
@@ -87,7 +87,7 @@ export class DatabaseService {
     }
   }
 
-  async update(id: number, body: Partial<User>) {
+  async update(id: number, body: Partial<AppUser>) {
     try {
       await this.userRepository.updateUser(id, body);
     } catch (error) {
@@ -106,11 +106,7 @@ export class DatabaseService {
 
   async selectOrders() {
     try {
-      const orders = await this.orderRepository.findAll();
-      return orders.map(order => ({
-        ...order,
-        userName: order.userHasDevice?.user?.name ?? null,
-      }));
+      return await this.orderRepository.findAll();
     } catch (error) {
       console.error('Erro ao selecionar ordens:', error);
       return [];
@@ -132,7 +128,7 @@ export class DatabaseService {
     }
   }
 
-  async updateOrder(id: number, body: Partial<Order>) {
+  async updateOrder(id: number, body: Partial<ServiceOrder>) {
     try {
       const order = await this.orderRepository.findById(id);
       if (!order) return;

@@ -26,9 +26,9 @@ export class DeviceRepository {
   }
 
   // Busca um dispositivo pelo nome
-  findByDeviceName(device: string): Promise<Device | null> {
+  findByDeviceName(device_name: string): Promise<Device | null> {
     return this.deviceRepo.findOne({
-      where: { device },
+      where: {  device_name},
       relations: ['userDevices'], // Relaciona o dispositivo com os usuários
     });
   }

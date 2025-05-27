@@ -1,12 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, JoinColumn } from 'typeorm';
 import { Address } from './address.entity';
+import { UserDevice } from './user_has_device.entity';
+import { User2faCode } from './code-user.entity';
 
-@Entity('user')
+@Entity('app_users')
 @Unique(['document'])
 @Unique(['email'])
-@Unique(['user'])
-@Unique(['password'])
-export class User {
+@Unique(['username'])
+@Unique(['user_password'])
+export class AppUser {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,30 +16,36 @@ export class User {
   document: string;
 
   @Column({ length: 45, nullable: true })
-  name: string;
+  name?: string;
 
   @Column({ length: 45 })
   email: string;
 
   @Column({ length: 45, nullable: true })
-  phone: string;
+  phone?: string;
 
   @Column({ length: 45 })
-  user: string;
+  username: string;
 
   @Column({ length: 45 })
-  password: string;
+  user_password: string;
 
   @Column({ length: 45, nullable: true })
-  number: string;
+  number?: string;
 
   @Column({ length: 45, nullable: true })
-  code: string;
+  code?: string;
 
   @Column({ type: 'datetime', nullable: true })
-  validity: Date;
+  validity?: Date;
 
-  @ManyToOne(() => Address)
+  @ManyToOne(() => Address, address => address.appUsers, { eager: true })
   @JoinColumn({ name: 'address_id' })
   address: Address;
+
+  @OneToMany(() => UserDevice, userDevice => userDevice.user)
+  userDevices: UserDevice[];
+
+  @OneToMany(() => User2faCode, user2faCode => user2faCode.user)
+  user2faCodes: User2faCode[];
 }

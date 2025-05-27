@@ -4,14 +4,14 @@ import { typeOrmConfig } from './typeorm.config';
 import { DatabaseService } from './database.service';
 
 // Entidades necessárias
-import { User } from './entities/user.entity';
-import { Order } from './entities/service_order.entity';
-import { UserHasDevice } from './entities/user_has_device.entity';
+import { AppUser } from './entities/user.entity';
+import { ServiceOrder } from './entities/service_order.entity';
+import { UserDevice } from './entities/user_has_device.entity';
 import { OrderLog } from './entities/order_log.entity';
 
 // Repositórios utilizados
 import { UserRepository } from './repositories/user.repository';
-import { ServiceOrderRepository } from './repositories/order.repository';
+import { OrderRepository } from './repositories/order.repository';
 import { UserDeviceRepository } from './repositories/user-device.repository';
 import { OrderLogRepository } from './repositories/order-log.repository';
 
@@ -19,16 +19,16 @@ import { OrderLogRepository } from './repositories/order-log.repository';
   imports: [
    TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([
-      User,
-      Order,
-      UserHasDevice,
+      AppUser,
+      ServiceOrder,
+      UserDevice,
       OrderLog,
     ]),
   ],
   providers: [
     DatabaseService,
     UserRepository,
-    ServiceOrderRepository,
+    OrderRepository,
     UserDeviceRepository,
     OrderLogRepository,
   ],

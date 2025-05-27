@@ -1,30 +1,30 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Order } from './service_order.entity';
+import { ServiceOrder } from './service_order.entity';
 
-@Entity('order_log')
+@Entity('order_logs')
 export class OrderLog {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Order)
-  @JoinColumn({ name: 'order_id' })
-  order: Order;
+  @ManyToOne(() => ServiceOrder, serviceOrder => serviceOrder.orderLogs, { eager: true })
+  @JoinColumn({ name: 'service_order_id' })
+  serviceOrder: ServiceOrder;
 
-  @Column({ type: 'text' })
+  @Column('text')
   cost: string;
 
-  @Column({ type: 'text' })
+  @Column('text')
   work: string;
 
-  @Column({ type: 'text' })
+  @Column('text')
   status: string;
 
-  @Column({ type: 'date' })
+  @Column('date')
   deadline: string;
 
-  @Column({ type: 'text' })
+  @Column('text')
   problem: string;
 
-  @Column({ type: 'datetime' })
-  date: Date;
+  @Column('datetime')
+  log_date: Date;
 }

@@ -1,19 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
-import { Workers } from './worker.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { StoreWorker } from './worker.entity';
 
-@Entity('2fcode_workers')
-@Unique(['code'])
-export class TwoFCodeWorkers {
+@Entity('worker_2fa_codes')
+export class Worker2faCode {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
-  code: string;
+  @Column('text', { nullable: true })
+  code?: string;
 
-  @Column({ type: 'datetime' })
-  validity: Date;
+  @Column('text', { nullable: true })
+  validity?: string;
 
-  @ManyToOne(() => Workers)
-  @JoinColumn({ name: 'workers_id' })
-  workers: Workers;
+  @ManyToOne(() => StoreWorker, worker => worker.twoFaCodes, { eager: true })
+  @JoinColumn({ name: 'worker_id' })
+  worker: StoreWorker;
 }

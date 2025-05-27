@@ -1,45 +1,61 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../entities/service_order.entity';
+import { ServiceOrder } from '../entities/service_order.entity';
 
 @Injectable()
-export class ServiceOrderRepository {
+export class OrderRepository {
   constructor(
-    @InjectRepository(Order)
-    private readonly serviceOrderRepo: Repository<Order>,
+    @InjectRepository(ServiceOrder)
+    private readonly orderRepo: Repository<ServiceOrder>,
   ) {}
 
-  // Busca todos os pedidos, incluindo suas relações com Store, UserDevice e logs
-  findAll(): Promise<Order[]> {
-    return this.serviceOrderRepo.find({
-      relations: ['store', 'userDevice', 'logs'], // Relaciona as entidades associadas
+  // Busca todas as ordens com os relacionamentos
+  findAll(): Promise<ServiceOrder[]> {
+    return this.orderRepo.find({
+      relations: ['workers', 'userHasDevice'],
+      order: { created_at: 'DESC' },
     });
   }
 
-  // Busca um pedido pelo ID
-  findById(id: number): Promise<Order | null> {
-    return this.serviceOrderRepo.findOne({
+  // Busca uma ordem pelo ID
+  findById(id: number): Promise<ServiceOrder | null> {
+    return this.orderRepo.findOne({
       where: { id },
-      relations: ['store', 'userDevice', 'logs'], // Relaciona as entidades associadas
+      relations: ['workers', 'userHasDevice'],
     });
   }
 
-  // Cria um novo pedido
-  async createOrder(data: Partial<Order>): Promise<Order> {
-    const newServiceOrder = this.serviceOrderRepo.create(data);
-    return this.serviceOrderRepo.save(newServiceOrder);
+  // Cria uma nova ordem
+  async createOrder(data: Partial<ServiceOrder>): Promise<ServiceOrder> {
+    const newOrder = this.orderRepo.create(data);
+    return this.orderRepo.save(newOrder);
   }
 
-  // Atualiza um pedido existente
-  async updateOrder(id: number, data: Partial<Order>): Promise<Order | null> {
-    await this.serviceOrderRepo.update(id, data);
+  // Atualiza uma ordem existente
+  async updateOrder(id: number, data: Partial<ServiceOrder>): Promise<ServiceOrder | null> {
+    await this.orderRepo.update(id, data);
     return this.findById(id);
   }
 
-  // Deleta um pedido pelo ID
+  // Remove uma ordem
   async deleteOrder(id: number): Promise<void> {
-    await this.serviceOrderRepo.delete(id);
+    await this.orderRepo.delete(id);
   }
 
+  // Busca ordens por ID do trabalhador
+  findByWorkerId(workerId: number): Promise<ServiceOrder[]> {
+    return this.orderRepo.find({
+      where: { worker: { id: workerId } },
+      relations: ['workers', 'userHasDevice'],
+    });
+  }
+
+  // Busca ordens por status
+  findByStatus(status: string): Promise<ServiceOrder[]> {
+    return this.orderRepo.find({
+      where: { status },
+      relations: ['workers', 'userHasDevice'],
+    });
+  }
 }

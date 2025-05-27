@@ -1,44 +1,52 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { UserHasDevice } from './user_has_device.entity';
-import { Workers } from './worker.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { UserDevice } from './user_has_device.entity';
+import { StoreWorker } from './worker.entity';
+import { OrderLog } from './order_log.entity';
+import { Picture } from './picture.entity';
 
-@Entity('order')
-export class Order {
+@Entity('service_orders')
+export class ServiceOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserHasDevice)
-  @JoinColumn({ name: 'user_has_device_id' })
-  userHasDevice: UserHasDevice;
+  @ManyToOne(() => UserDevice, userDevice => userDevice.serviceOrders, { eager: true })
+  @JoinColumn({ name: 'user_device_id' })
+  userDevice: UserDevice;
 
-  @ManyToOne(() => Workers)
-  @JoinColumn({ name: 'workers_id' })
-  workers: Workers;
+  @ManyToOne(() => StoreWorker, worker => worker.serviceOrders, { eager: true })
+  @JoinColumn({ name: 'worker_id' })
+  worker: StoreWorker;
 
-  @Column({ type: 'datetime', name: 'created_at' })
-  createdAt: Date;
+  @Column('datetime')
+  created_at: Date;
 
-  @Column({ type: 'datetime', name: 'completed_at' })
-  completedAt: Date;
+  @Column('datetime')
+  completed_at: Date;
 
-  @Column({ type: 'int' })
+  @Column('int')
   feedback: number;
 
-  @Column({ type: 'int' })
+  @Column('int')
   warranty: number;
 
-  @Column({ type: 'text', nullable: true })
-  cost: string;
+  @Column('text', { nullable: true })
+  cost?: string;
 
-  @Column({ type: 'text', nullable: true })
-  work: string;
+  @Column('text', { nullable: true })
+  work?: string;
 
-  @Column({ type: 'text', nullable: true })
-  status: string;
+  @Column('text', { nullable: true })
+  status?: string;
 
-  @Column({ type: 'date', nullable: true })
-  deadline: string;
+  @Column('date', { nullable: true })
+  deadline?: string;
 
-  @Column({ type: 'text', nullable: true })
-  problem: string;
+  @Column('text', { nullable: true })
+  problem?: string;
+
+  @OneToMany(() => OrderLog, orderLog => orderLog.serviceOrder)
+  orderLogs: OrderLog[];
+
+  @OneToMany(() => Picture, picture => picture.serviceOrder)
+  pictures: Picture[];
 }
