@@ -44,7 +44,15 @@ export class ValidationController {
     data.userId = await this.usersService.getIdByCpf(data.cpf);
     return await this.ordensService.createOrdem(data);
   }
-
+  @Post('ordens/filter')
+  async getOrdensByStoreAndStatus(
+    @Body() body: { storeId: number; status: string }
+  ) {
+    return await this.ordensService.getOrdensByStoreAndStatus(
+      body.storeId,
+      body.status
+    );
+  }
   @Delete('ordens/:id')
   async deleteOrdem(@Param('id') id: number) {
     return await this.ordensService.deleteOrdem(id);

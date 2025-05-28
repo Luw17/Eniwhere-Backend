@@ -1,15 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { AppUser } from './user.entity';
 import { Store } from './store.entity';
 
 @Entity('addresses')
-@Unique(['postal_code'])
 export class Address {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('text')
-  postal_code: string;
+  postalCode: string;
 
   @Column('text')
   country: string;
@@ -24,10 +23,10 @@ export class Address {
   neighborhood: string;
 
   @Column('text')
-  address_line: string;
+  addressLine: string;
 
   @OneToMany(() => AppUser, user => user.address)
-  appUsers: AppUser[];
+  users: AppUser[];
 
   @OneToMany(() => Store, store => store.address)
   stores: Store[];

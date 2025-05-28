@@ -9,20 +9,23 @@ export class OrderRepository {
     @InjectRepository(ServiceOrder)
     private readonly orderRepo: Repository<ServiceOrder>,
   ) {}
-
-  // Busca todas as ordens com os relacionamentos
   findAll(): Promise<ServiceOrder[]> {
     return this.orderRepo.find({
-      relations: ['workers', 'userHasDevice'],
       order: { created_at: 'DESC' },
     });
   }
+async findByStoreAndStatus(storeId: number, status: string): Promise<ServiceOrder[]> {
+  return this.orderRepo.find({
+    where: { store: { id: storeId }, status },
+    relations: [],
+  });
+}
 
   // Busca uma ordem pelo ID
   findById(id: number): Promise<ServiceOrder | null> {
     return this.orderRepo.findOne({
       where: { id },
-      relations: ['workers', 'userHasDevice'],
+      relations: ['worker', 'userDevice'],
     });
   }
 
@@ -47,7 +50,7 @@ export class OrderRepository {
   findByWorkerId(workerId: number): Promise<ServiceOrder[]> {
     return this.orderRepo.find({
       where: { worker: { id: workerId } },
-      relations: ['workers', 'userHasDevice'],
+      relations: ['worker', 'userDevice'],
     });
   }
 
@@ -55,7 +58,7 @@ export class OrderRepository {
   findByStatus(status: string): Promise<ServiceOrder[]> {
     return this.orderRepo.find({
       where: { status },
-      relations: ['workers', 'userHasDevice'],
+      relations: ['worker', 'userDevice'],
     });
   }
 }

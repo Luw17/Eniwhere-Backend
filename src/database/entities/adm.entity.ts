@@ -1,26 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany } from 'typeorm';
-import { Admin2faCode } from './code-adm.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Admin2FACode } from './code-adm.entity';
 
 @Entity('admins')
-@Unique(['username'])
-@Unique(['user_password'])
-@Unique(['code'])
 export class Admin {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('text', { unique: true })
   username: string;
 
-  @Column('text')
-  user_password: string;
+  @Column('text', { unique: true })
+  userPassword: string;
 
-  @Column('text')
+  @Column('text', { unique: true })
   code: string;
 
   @Column('datetime')
   validity: Date;
 
-  @OneToMany(() => Admin2faCode, code => code.admin)
-  twoFaCodes: Admin2faCode[];
+  @OneToMany(() => Admin2FACode, code => code.admin)
+  twoFactorCodes: Admin2FACode[];
 }

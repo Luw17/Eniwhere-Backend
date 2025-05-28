@@ -1,51 +1,46 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Address } from './address.entity';
 import { UserDevice } from './user_has_device.entity';
-import { User2faCode } from './code-user.entity';
+import { User2FACode } from './code-user.entity';
 
 @Entity('app_users')
-@Unique(['document'])
-@Unique(['email'])
-@Unique(['username'])
-@Unique(['user_password'])
 export class AppUser {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 45 })
+  @Column({ unique: true })
   document: string;
 
-  @Column({ length: 45, nullable: true })
-  name?: string;
+  @Column({ nullable: true })
+  name: string;
 
-  @Column({ length: 45 })
+  @Column({ unique: true })
   email: string;
 
-  @Column({ length: 45, nullable: true })
-  phone?: string;
+  @Column({ nullable: true })
+  phone: string;
 
-  @Column({ length: 45 })
+  @Column({ unique: true })
   username: string;
 
-  @Column({ length: 45 })
-  user_password: string;
+  @Column({ unique: true })
+  userPassword: string;
 
-  @Column({ length: 45, nullable: true })
-  number?: string;
+  @Column({ nullable: true })
+  number: string;
 
-  @Column({ length: 45, nullable: true })
-  code?: string;
+  @Column({ nullable: true })
+  code: string;
 
   @Column({ type: 'datetime', nullable: true })
-  validity?: Date;
+  validity: Date;
 
-  @ManyToOne(() => Address, address => address.appUsers, { eager: true })
-  @JoinColumn({ name: 'address_id' })
+  @ManyToOne(() => Address, address => address.users)
   address: Address;
 
-  @OneToMany(() => UserDevice, userDevice => userDevice.user)
+  @OneToMany(() => UserDevice, ud => ud.user)
   userDevices: UserDevice[];
 
-  @OneToMany(() => User2faCode, user2faCode => user2faCode.user)
-  user2faCodes: User2faCode[];
+  @OneToMany(() => User2FACode, code => code.user)
+  twoFactorCodes: User2FACode[];
 }

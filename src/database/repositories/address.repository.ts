@@ -18,9 +18,9 @@ export class AddressRepository {
     return this.addressRepo.findOneBy({ id });
   }
 
-  findByPostalCode(postal_code: string): Promise<Address[]> {
+  findByPostalCode(postalCode: string): Promise<Address[]> {
     return this.addressRepo.find({
-      where: { postal_code }, // Usar nome da propriedade da entidade
+      where: { postalCode }, // Usar nome da propriedade da entidade
     });
   }
 

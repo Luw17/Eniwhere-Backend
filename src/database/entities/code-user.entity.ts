@@ -1,19 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { AppUser } from './user.entity';
 
 @Entity('user_2fa_codes')
-@Unique(['code'])
-export class User2faCode {
+export class User2FACode {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('text', { unique: true })
   code: string;
 
   @Column('datetime')
   validity: Date;
 
-  @ManyToOne(() => AppUser, user => user.user2faCodes, { eager: true })
-  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => AppUser, user => user.twoFactorCodes)
   user: AppUser;
 }

@@ -37,6 +37,9 @@ export class OrdensService {
         });
       }
         */
+    async getOrdensByStoreAndStatus(storeId: number, status: string) {
+        return this.DatabaseService.selectOrdersByStoreAndStatus(storeId, status);
+    }
 }
 
 

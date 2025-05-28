@@ -1,14 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { UserDevice } from './user_has_device.entity';
 
 @Entity('devices')
-@Unique(['id'])
 export class Device {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('text')
-  device_name: string;
+  deviceName: string;
 
   @Column('text')
   model: string;
@@ -16,6 +15,6 @@ export class Device {
   @Column('text')
   brand: string;
 
-  @OneToMany(() => UserDevice, userDevice => userDevice.device)
+  @OneToMany(() => UserDevice, ud => ud.device)
   userDevices: UserDevice[];
 }

@@ -32,7 +32,7 @@ export class DatabaseService {
 
   async validateUser(user: string, password: string) {
     const users = await this.userRepository.findAll();
-    const match = users.find(u => u.user === user && u.password === password);
+    const match = users.find(u => u.username === user && u.userPassword === password);
     if (match) return match.id;
     throw new UnauthorizedException('Credenciais inválidas');
   }
@@ -61,7 +61,7 @@ export class DatabaseService {
     try {
       const users = await this.userRepository.findAll();
       const match = users.find(u =>
-        u.user === user.user &&
+        u.username === user.user &&
         u.code === user.code &&
         u.validity &&
         u.validity > new Date(),
@@ -112,6 +112,14 @@ export class DatabaseService {
       return [];
     }
   }
+  async selectOrdersByStoreAndStatus(storeId: number, status: string) {
+    try {
+      return await this.orderRepository.findByStoreAndStatus(storeId, status);
+    } catch (error) {
+      console.error('Erro ao selecionar ordens:', error);
+      return [];
+    }
+  }
 
   async selectOrder(id: number) {
     try {
@@ -120,7 +128,7 @@ export class DatabaseService {
 
       return {
         ...order,
-        userName: order.userHasDevice?.user?.name ?? null,
+        userName: order.userDevice?.user?.name ?? null,
       };
     } catch (error) {
       console.error('Erro ao selecionar ordem:', error);
@@ -143,7 +151,7 @@ export class DatabaseService {
       const order = await this.orderRepository.findById(id);
       if (!order) return;
       await this.orderRepository.updateOrder(id, {
-        completedAt: new Date(),
+        completed_at: new Date(),
       });
     } catch (error) {
       console.error('Erro ao deletar ordem:', error);

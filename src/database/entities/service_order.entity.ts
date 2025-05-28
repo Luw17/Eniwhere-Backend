@@ -3,49 +3,54 @@ import { UserDevice } from './user_has_device.entity';
 import { StoreWorker } from './worker.entity';
 import { OrderLog } from './order_log.entity';
 import { Picture } from './picture.entity';
+import { Store } from './store.entity';
 
 @Entity('service_orders')
 export class ServiceOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserDevice, userDevice => userDevice.serviceOrders, { eager: true })
+  @ManyToOne(() => UserDevice, userDevice => userDevice.serviceOrders)
   @JoinColumn({ name: 'user_device_id' })
   userDevice: UserDevice;
 
-  @ManyToOne(() => StoreWorker, worker => worker.serviceOrders, { eager: true })
+  @ManyToOne(() => StoreWorker, worker => worker.serviceOrders)
   @JoinColumn({ name: 'worker_id' })
   worker: StoreWorker;
 
-  @Column('datetime')
+  @ManyToOne(() => Store, { eager: false, nullable: false })
+  @JoinColumn({ name: 'store_id' })
+  store: Store;
+
+  @Column({ type: 'datetime' })
   created_at: Date;
 
-  @Column('datetime')
-  completed_at: Date;
+  @Column({ type: 'datetime', nullable: true })
+  completed_at?: Date;
 
-  @Column('int')
-  feedback: number;
+  @Column({ type: 'int', nullable: true })
+  feedback?: number;
 
-  @Column('int')
-  warranty: number;
+  @Column({ type: 'int', nullable: true })
+  warranty?: number;
 
-  @Column('text', { nullable: true })
+  @Column({ type: 'text', nullable: true })
   cost?: string;
 
-  @Column('text', { nullable: true })
+  @Column({ type: 'text', nullable: true })
   work?: string;
 
-  @Column('text', { nullable: true })
+  @Column({ type: 'text', nullable: true })
   status?: string;
 
-  @Column('date', { nullable: true })
-  deadline?: string;
+  @Column({ type: 'date', nullable: true })
+  deadline?: Date;
 
-  @Column('text', { nullable: true })
+  @Column({ type: 'text', nullable: true })
   problem?: string;
 
-  @OneToMany(() => OrderLog, orderLog => orderLog.serviceOrder)
-  orderLogs: OrderLog[];
+  @OneToMany(() => OrderLog, log => log.serviceOrder)
+  logs: OrderLog[];
 
   @OneToMany(() => Picture, picture => picture.serviceOrder)
   pictures: Picture[];

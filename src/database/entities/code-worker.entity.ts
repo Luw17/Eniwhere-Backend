@@ -1,18 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { StoreWorker } from './worker.entity';
 
 @Entity('worker_2fa_codes')
-export class Worker2faCode {
+export class Worker2FACode {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('text', { nullable: true })
-  code?: string;
+  code: string;
 
   @Column('text', { nullable: true })
-  validity?: string;
+  validity: string;
 
-  @ManyToOne(() => StoreWorker, worker => worker.twoFaCodes, { eager: true })
-  @JoinColumn({ name: 'worker_id' })
+  @ManyToOne(() => StoreWorker, worker => worker.twoFactorCodes)
   worker: StoreWorker;
 }
