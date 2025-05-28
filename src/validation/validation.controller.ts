@@ -11,40 +11,50 @@ export class ValidationController {
     private readonly usersService: UsersService
   ) {}
 
+  //done
   @Get('ordens')
   async getAllOrdens() {
     return await this.ordensService.getAllOrdens();
   }
-
+  //done
   @Get('ordens/:id')
   async getOneOrdem(@Param('id') id: number) {
     return await this.ordensService.getOneOrdem(id);
   }
+  //done
+  @Get('ordens/loja/:storeId')
+  async getOrdensByStore(@Param('storeId') storeId: number) {
+    return await this.ordensService.getOrdensByStore(storeId);
+  }
 
+  //done
   @Put('ordens/:id')
   async updateOrdem(
     @Param('id') id: number,
-    @Body(ValidateCpfPipe) body: { cpf: string; [key: string]: any }, // Valida o objeto completo com o Pipe
+    @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId: number} 
   ) {
-    const { cpf } = body;
-    const user = await this.usersService.verifyUser(cpf); // Confirma que o CPF existe
-    if (!user) {
-      throw new UnauthorizedException('CPF inválido');
-    }
-    return await this.ordensService.updateOrdem(id, body);
+    return await this.ordensService.updateOrdem(id, data);
   }
-    /*sujeita a troca de nome e valores de entrada*/
+  
+  //done
   @Post('ordens')
-  async createOrdem( data: {workerId:number,cpf:string,deviceId:number,userId:number}
+  async createOrdem( @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId: number}
   ) {
-    const user = await this.usersService.verifyUser(data.cpf);
+    console.log('Creating order with data:', data);
+    const user = await this.usersService.verifyUser(data.document);
+    console.log('User verification result:', user);
     if (!user) {
       throw new UnauthorizedException('CPF inválido');
     }
-    data.userId = await this.usersService.getIdByCpf(data.cpf);
+    data.userId = await this.usersService.getIdByCpf(data.document);
+    console.log('User ID after verification:', data.userId);
+    data.userDeviceId = await this.usersService.getUserDeviceByid(data.deviceId, data.userId);
+    console.log('User Device ID:', data.userDeviceId);
     return await this.ordensService.createOrdem(data);
   }
-  @Post('ordens/filter')
+
+  //done
+  @Post('ordens/storeNstatus')
   async getOrdensByStoreAndStatus(
     @Body() body: { storeId: number; status: string }
   ) {
@@ -53,20 +63,19 @@ export class ValidationController {
       body.status
     );
   }
+
+  //done
   @Delete('ordens/:id')
   async deleteOrdem(@Param('id') id: number) {
     return await this.ordensService.deleteOrdem(id);
   }
-  /*função em manutenção
-    sujeita a troca de nome e valores de entrada
+
+  //done
   @Put('ordens/:id/concluir')
   async concluirOrdem(
-    @Param('id') id: number,
-    @Body() body: { conclusao: string }
-  ) {
-    return await this.ordensService.concluirOrdem(id, body);
+    @Param('id') id: number) {
+    return await this.ordensService.concluirOrdem(id);
   }
-    */
 
   @Get('usuarios')
   async getAllUsers() {

@@ -60,4 +60,9 @@ export class UsersService {
         return this.databaseService.selectCode( authCode);
       }
          */
+
+
+    async getUserDeviceByid(deviceId: number, userId: number) {
+        return this.databaseService.selectUserDeviceById(deviceId,userId);
+    }
 }

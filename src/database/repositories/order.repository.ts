@@ -23,23 +23,58 @@ async findByStoreAndStatus(storeId: number, status: string): Promise<ServiceOrde
 
   // Busca uma ordem pelo ID
   findById(id: number): Promise<ServiceOrder | null> {
-    return this.orderRepo.findOne({
-      where: { id },
-      relations: ['worker', 'userDevice'],
+    return this.orderRepo
+    .createQueryBuilder('order')
+    .leftJoin('order.worker', 'worker')
+    .leftJoin('order.store', 'store')
+    .select([
+      'order.id',
+      'order.created_at',
+      'order.completed_at',
+      'order.feedback',
+      'order.warranty',
+      'order.cost',
+      'order.work',
+      'order.status',
+      'order.deadline',
+      'order.problem',
+      'worker.name',
+      'store.name',
+    ])
+    .where('order.id = :id', { id })
+    .getOne();
+
+
+  }
+  
+  findByStore(storeId: number): Promise<ServiceOrder[]> {
+    return this.orderRepo.find({
+      where: { store: { id: storeId } },
+      relations: [],
     });
   }
 
   // Cria uma nova ordem
-  async createOrder(data: Partial<ServiceOrder>): Promise<ServiceOrder> {
-    const newOrder = this.orderRepo.create(data);
-    return this.orderRepo.save(newOrder);
+  async createOrder(orderData: Partial<ServiceOrder>): Promise<boolean> {
+    try {
+      const newOrder = this.orderRepo.create(orderData);
+      await this.orderRepo.save(newOrder);
+      return true; // Sucesso
+    } catch (error) {
+      console.error('Erro ao criar ordem de serviço:', error);
+      return false; // Falha
+    }
   }
 
-  // Atualiza uma ordem existente
-  async updateOrder(id: number, data: Partial<ServiceOrder>): Promise<ServiceOrder | null> {
+async updateOrder(id: number, data: Partial<ServiceOrder>): Promise<boolean> {
+  try {
     await this.orderRepo.update(id, data);
-    return this.findById(id);
+    return true;
+  } catch (error) {
+    console.error('Erro ao atualizar ordem de serviço:', error);
+    return false;
   }
+}
 
   // Remove uma ordem
   async deleteOrder(id: number): Promise<void> {

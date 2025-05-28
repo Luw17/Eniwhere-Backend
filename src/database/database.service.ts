@@ -123,24 +123,25 @@ export class DatabaseService {
 
   async selectOrder(id: number) {
     try {
-      const order = await this.orderRepository.findById(id);
-      if (!order) return null;
-
-      return {
-        ...order,
-        userName: order.userDevice?.user?.name ?? null,
-      };
+      return await this.orderRepository.findById(id);
     } catch (error) {
       console.error('Erro ao selecionar ordem:', error);
       return null;
     }
   }
-
-  async updateOrder(id: number, body: Partial<ServiceOrder>) {
+  async selectOrdersByStore(storeId: number) {
+    try {
+      return await this.orderRepository.findByStore(storeId);
+    } catch (error) {
+      console.error('Erro ao selecionar ordens por loja:', error);
+      return [];
+    }
+  }
+  async updateOrder(id: number, data) {
     try {
       const order = await this.orderRepository.findById(id);
       if (!order) return;
-      await this.orderRepository.updateOrder(id, body);
+      await this.orderRepository.updateOrder(id, data);
     } catch (error) {
       console.error('Erro ao atualizar ordem:', error);
     }
@@ -152,6 +153,7 @@ export class DatabaseService {
       if (!order) return;
       await this.orderRepository.updateOrder(id, {
         completed_at: new Date(),
+        status: 'cancelled',
       });
     } catch (error) {
       console.error('Erro ao deletar ordem:', error);
@@ -170,25 +172,10 @@ export class DatabaseService {
   }
 
   /* todo: sera modificada para a estrutura do novo banco*/
-  async createOrder(data) {
-    if(data.picture){
-      // Aqui você pode implementar a lógica para salvar a imagem
-      //usando o repositorio de imagem e salvando o caminho no banco
-    }
-    if(!data.userHasDeviceId){ 
-      if(!data.userId && !data.deviceId){
-        throw new Error('É necessário informar userId ou deviceId para criar uma ordem.');
-      }
-      try{
-        data.userHasDeviceId = await this.userDeviceRepository.createUserDevice({ user: data.userId, device: data.deviceId });
-      }catch(error){
-        console.error('não foi possível criar a user has device:', error);
-        throw new Error('não foi possível criar a user has device');
-      }
-    }
+  //{workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId: number}
+  async createOrder(orderData: Partial<ServiceOrder>) {
     try {
-      //verificar se não da ruim mandar o user id e o deviceId
-      const newOrder = await this.orderRepository.createOrder(data);
+      const newOrder = await this.orderRepository.createOrder(orderData);
       return newOrder;
     } catch (error) {
       console.error('Erro ao criar ordem:', error);
@@ -209,5 +196,22 @@ export class DatabaseService {
       console.error('Erro ao atualizar código de autenticação:', error);
     }
   }
+  async selectUserDeviceById(deviceId: number, userId: number): Promise<number | null> {
+  try {
+    const userDevice = await this.userDeviceRepository.findDevice(deviceId, userId);
+    if (userDevice) {
+      return userDevice.id;
+    }
+    const newUserDevice = this.userDeviceRepository.createDevice(deviceId, userId);
+
+    const savedUserDevice = await this.userDeviceRepository.saveDevice(newUserDevice);
+    return savedUserDevice.id;
+
+  } catch (error) {
+    console.error('Erro ao selecionar ou criar dispositivo do usuário:', error);
+    return null;
+  }
+}
+
 }
 

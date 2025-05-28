@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserDevice } from '../entities/user_has_device.entity';
+import { AppUser } from '../entities/user.entity';
+import { Device } from '../entities/device.entity';
 
 @Injectable()
 export class UserDeviceRepository {
@@ -58,4 +60,26 @@ async createUserDevice(data: Partial<UserDevice>): Promise<number> {
       relations: ['user', 'orders'], // Relaciona as entidades associadas
     });
   }
+
+  
+  // Busca um dispositivo de usuário pelo ID do dispositivo e ID do usuário
+async findDevice(deviceId: number, userId: number): Promise<UserDevice | null> {
+  return this.userDeviceRepo.findOne({
+    where: {
+      device: { id: deviceId },
+      user: { id: userId },
+    },
+  });
+}
+
+createDevice(deviceId: number, userId: number): UserDevice {
+  return this.userDeviceRepo.create({
+    user: { id: userId } as AppUser,
+    device: { id: deviceId } as Device,
+  });
+}
+
+async saveDevice(userDevice: UserDevice): Promise<UserDevice> {
+  return this.userDeviceRepo.save(userDevice);
+}
 }

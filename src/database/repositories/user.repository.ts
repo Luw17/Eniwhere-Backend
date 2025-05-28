@@ -13,7 +13,7 @@ export class UserRepository {
   // Busca todos os usuários, incluindo suas relações com address, devices e codes
   async findAll(): Promise<AppUser[]> {
     return await this.userRepo.find({
-      relations: ['address', 'devices', 'codes'], // Relaciona as entidades associadas
+      relations: ['address', 'userDevices'], // Relaciona as entidades associadas
     });
   }
 

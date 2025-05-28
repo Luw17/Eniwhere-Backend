@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Address } from './address.entity';
 import { UserDevice } from './user_has_device.entity';
 import { User2FACode } from './code-user.entity';
@@ -23,7 +23,7 @@ export class AppUser {
   @Column({ unique: true })
   username: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 100, nullable: false,name: 'user_password' })
   userPassword: string;
 
   @Column({ nullable: true })
@@ -36,6 +36,7 @@ export class AppUser {
   validity: Date;
 
   @ManyToOne(() => Address, address => address.users)
+  @JoinColumn({ name: 'address_id' })
   address: Address;
 
   @OneToMany(() => UserDevice, ud => ud.user)

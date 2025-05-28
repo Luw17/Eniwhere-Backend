@@ -7,7 +7,7 @@ export class Address {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column({type:'varchar',length:20,name: 'postal_code'})
   postalCode: string;
 
   @Column('text')
@@ -22,7 +22,7 @@ export class Address {
   @Column('text')
   neighborhood: string;
 
-  @Column('text')
+  @Column({type:'varchar',length:255,name: 'address_line'})
   addressLine: string;
 
   @OneToMany(() => AppUser, user => user.address)
