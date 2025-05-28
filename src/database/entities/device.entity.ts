@@ -6,13 +6,13 @@ export class Device {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column({ name: 'device_name', type: 'varchar', length: 100 })
   deviceName: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 100 })
   model: string;
 
-  @Column('text')
+  @Column({ type: 'varchar', length: 100 })
   brand: string;
 
   @OneToMany(() => UserDevice, ud => ud.device)

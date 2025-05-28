@@ -13,7 +13,7 @@ export class DeviceRepository {
   // Busca todos os dispositivos com a relação de UserDevice
   findAll(): Promise<Device[]> {
     return this.deviceRepo.find({
-      relations: ['userDevices'], // Inclui os dispositivos de usuários
+      relations: [],
     });
   }
 
