@@ -39,6 +39,9 @@ export class AppUser {
   @JoinColumn({ name: 'address_id' })
   address: Address;
 
+  @Column({ name: 'active', nullable: false })
+  active: boolean;
+
   @OneToMany(() => UserDevice, ud => ud.user)
   userDevices: UserDevice[];
 

@@ -14,6 +14,8 @@ import { UserRepository } from './repositories/user.repository';
 import { OrderRepository } from './repositories/order.repository';
 import { UserDeviceRepository } from './repositories/user-device.repository';
 import { OrderLogRepository } from './repositories/order-log.repository';
+import { AddressRepository } from './repositories/address.repository';
+import { Address } from './entities/address.entity';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { OrderLogRepository } from './repositories/order-log.repository';
       ServiceOrder,
       UserDevice,
       OrderLog,
+      Address,
     ]),
   ],
   providers: [
@@ -31,6 +34,7 @@ import { OrderLogRepository } from './repositories/order-log.repository';
     OrderRepository,
     UserDeviceRepository,
     OrderLogRepository,
+    AddressRepository,
   ],
   exports: [
     DatabaseService,

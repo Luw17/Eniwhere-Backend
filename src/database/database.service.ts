@@ -5,20 +5,21 @@ import { AppUser } from './entities/user.entity';
 import { UserDeviceRepository } from './repositories/user-device.repository';
 import { OrderLogRepository } from './repositories/order-log.repository';
 import { ServiceOrder } from './entities/service_order.entity'; 
+import { Address } from './entities/address.entity';
+import { AddressRepository } from './repositories/address.repository';
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
 
 @Injectable()
 export class DatabaseService {
-  getIdByCpf(cpf: string) {
-      throw new Error("Method not implemented.");
-  }
+
   constructor(
     private readonly userRepository: UserRepository,
     private readonly orderRepository: OrderRepository,
     private readonly orderLogRepository: OrderLogRepository,
     private readonly userDeviceRepository: UserDeviceRepository,
+    private readonly addressRepository: AddressRepository,
   ) {}
 
   async selectUsers() {
@@ -209,6 +210,25 @@ export class DatabaseService {
 
   } catch (error) {
     console.error('Erro ao selecionar ou criar dispositivo do usuário:', error);
+    return null;
+  }
+}
+
+  insertAddress(addressData: Partial<Address>) {
+    try {
+      return this.addressRepository.createAddress(addressData);
+    } catch (error) {
+      console.error('Erro ao inserir endereço:', error);
+      throw error;
+    }
+  }
+
+async verifyPostalCode(postalCode: string): Promise<Address | null> {
+  try {
+    const address = await this.addressRepository.findByPostalCode(postalCode);
+    return address;
+  } catch (error) {
+    console.error('Erro ao verificar CEP:', error);
     return null;
   }
 }

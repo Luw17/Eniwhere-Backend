@@ -31,14 +31,16 @@ export class ValidationController {
   @Put('ordens/:id')
   async updateOrdem(
     @Param('id') id: number,
-    @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId: number} 
+    @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, 
+      deadline: string, cost: number, status: string, storeId: number,userDeviceId: number} 
   ) {
     return await this.ordensService.updateOrdem(id, data);
   }
   
   //done
   @Post('ordens')
-  async createOrdem( @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId: number}
+  async createOrdem( @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, 
+    deadline: string, cost: number, status: string, storeId: number,userDeviceId: number}
   ) {
     console.log('Creating order with data:', data);
     const user = await this.usersService.verifyUser(data.document);
@@ -77,47 +79,55 @@ export class ValidationController {
     return await this.ordensService.concluirOrdem(id);
   }
 
+  //done
   @Get('usuarios')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
+  //done
   @Get('usuarios/:id')
   async getOneUser(@Param('id') id: number) {
     return await this.usersService.getOneUser(id);
   }
 
+  //done
   @Put('usuarios/:id')
   async updateUser(
     @Param('id') id: number,
-    @Body(ValidateCpfPipe) body: { cpf: string; [key: string]: any }, // Valida o objeto completo com o Pipe
+    @Body() data: {username?: string; name?: string; email?: string; phone?: string; userPassword?: string; number?: number; address?: number;
+      postal_code?: string; country?: string; state?: string; city?: string; neighborhood?: string; address_line?: string;
+    },
   ) {
-    const { cpf } = body;
-    const user = await this.usersService.verifyUser(cpf); // Confirma que o CPF existe
+
+    const user = await this.usersService.getOneUser(id);
     if (!user) {
-      throw new UnauthorizedException('CPF inválido');
+      throw new UnauthorizedException('usuario não encontrado');
     }
-    return await this.usersService.updateUser(id, body);
+    return await this.usersService.updateUser(id, data);
   }
 
+  //done
   @Post('usuarios')
   async createUser(
-    @Body(ValidateCpfPipe) body: { cpf: string; nome: string; email: string; telefone: string } // Valida o objeto completo com o Pipe
-  ) {
-    const { cpf } = body;
-    console.log('entrou no post ' + cpf);
-    const userExists = await this.usersService.verifyUser(cpf);
+    @Body() data : { document: string; name: string; email: string; phone?: string ; username?: string; userPassword?: string ;number: number; address?: number;
+      postal_code?: string; country?: string; state?: string; city?: string; neighborhood?: string; address_line?: string;
+    }) {
+
+    const userExists = await this.usersService.verifyUser(data.document);
     if (userExists) {
       throw new UnauthorizedException('CPF já cadastrado');
     }
-    return await this.usersService.create(body);
+    return await this.usersService.create(data);
   }
 
+  //done
   @Delete('usuarios/:id')
   async deleteUser(@Param('id') id: number) {
     return await this.usersService.deleteUser(id);
   }
   
+  //done
   @Get('usuarios/verificar/:cpf')
   async verificarUsuario(@Param('cpf') cpf: string) {
     const sanitizedCpf = cpf.replace(/\D/g, '');

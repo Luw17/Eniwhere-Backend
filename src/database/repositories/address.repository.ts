@@ -18,15 +18,17 @@ export class AddressRepository {
     return this.addressRepo.findOneBy({ id });
   }
 
-  findByPostalCode(postalCode: string): Promise<Address[]> {
-    return this.addressRepo.find({
-      where: { postalCode }, // Usar nome da propriedade da entidade
-    });
-  }
+async findByPostalCode(postalCode: string): Promise<Address | null> {
+  return this.addressRepo.findOne({
+    where: { postalCode },
+  });
+}
 
-  async createAddress(address: Partial<Address>): Promise<Address> {
+
+  async createAddress(address: Partial<Address>): Promise<number> {
     const newAddress = this.addressRepo.create(address);
-    return this.addressRepo.save(newAddress);
+    const savedAddress = await this.addressRepo.save(newAddress);
+    return savedAddress.id;
   }
 
   async updateAddress(id: number, data: Partial<Address>): Promise<Address | null> {

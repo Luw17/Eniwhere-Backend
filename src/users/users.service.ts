@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "../database/database.service";
+import { AppUser } from "src/database/entities/user.entity";
+import { Address } from "src/database/entities/address.entity";
 
 @Injectable()
 export class UsersService {
@@ -17,32 +19,90 @@ export class UsersService {
     async getOneUser(id: number) {
         return this.databaseService.selectF(id);
     }
-    async create(body) {
-        if(body.nome && body.cpf && body.email) {
-            body.criadoEm = new Date();
-            if(body.telefone) body.telefone = '';
-            const user = {
-                nome: body.nome,
-                cpf: body.cpf,
-                email: body.email,
-                telefone: body.telefone,
-                criadoEm: body.criadoEm,
-                usuario: body.cpf,
-                senha: body.cpf,
-                permissao: 'user'
+    async create(data) {
+        if(!data.address) {
+            if(data.postal_code && data.country && data.state && data.city && data.neighborhood && data.address_line) {
+            const addressExist = await this.databaseService.verifyPostalCode(data.postal_code);
+            if (addressExist) {
+                data.addressId = addressExist.id;
+            } else {
+            const addressData: Partial<Address> = {
+                postalCode: data.postal_code,
+                country: data.country,
+                state: data.state,
+                city: data.city,
+                neighborhood: data.neighborhood,
+                addressLine: data.address_line,
             };
+            try {
+                const address = await this.databaseService.insertAddress(addressData);
+                data.addressId = address;
+            } catch (error) {
+                console.error('Error inserting address:', error);
+            }
+            }
+        }
+
+        const dataUser: Partial<AppUser> = {
+            document: data.document,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            username: data.username,
+            userPassword: data.userPassword,
+            number: data.number,
+            address: data.address ? { id: data.address } as Address : null,
+
+        }
         try {
-           await this.databaseService.insertUser(user);
+           await this.databaseService.insertUser(dataUser);
         } catch (error) {
             console.error('Error inserting user:', error);
         }
         }
     }
+
     async updateUser(id: number,body) {
-        return this.databaseService.update(id,body);
+        if(!body.address) {
+            if(body.postal_code && body.country && body.state && body.city && body.neighborhood && body.address_line) {
+            const addressExist = await this.databaseService.verifyPostalCode(body.postal_code);
+            if (addressExist) {
+                body.address = addressExist.id;
+            } else {
+            const addressData: Partial<Address> = {
+                postalCode: body.postal_code,
+                country: body.country,
+                state: body.state,
+                city: body.city,
+                neighborhood: body.neighborhood,
+                addressLine: body.address_line,
+            };
+            try {
+                const address = await this.databaseService.insertAddress(addressData);
+                body.address = address;
+            } catch (error) {
+                console.error('Error inserting address:', error);
+            }
+            }
+        }
+        }
+        console.log('body', body);
+        const {
+            postal_code,
+            country,
+            state,
+            city,
+            neighborhood,
+            address_line,
+            ...cleanedBody
+        } = body;
+
+        console.log('cleanedBody', cleanedBody);
+        return this.databaseService.update(id, cleanedBody);
     }
+
     async deleteUser(id: number){
-        return this.databaseService.delete(id);
+        return this.databaseService.update(id, { active: false });
     }
     async verifyUser(cpf: string){
         return this.databaseService.verifyUser(cpf);
