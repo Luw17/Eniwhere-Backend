@@ -115,9 +115,11 @@ export class ValidationController {
     }) {
 
     const userExists = await this.usersService.verifyUser(data.document);
+    console.log('User verification result:', userExists);
     if (userExists) {
       throw new UnauthorizedException('CPF já cadastrado');
     }
+    console.log('Creating user with data:', data);
     return await this.usersService.create(data);
   }
 

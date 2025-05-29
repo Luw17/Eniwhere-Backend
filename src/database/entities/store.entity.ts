@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Address } from './address.entity';
 import { StoreWorker } from './worker.entity';
 import { Store2FACode } from './code-store.entity';
+import { ServiceOrder } from './service_order.entity';
 
 @Entity('stores')
 export class Store {
@@ -20,7 +21,7 @@ export class Store {
   @Column({ unique: true })
   username: string;
 
-  @Column({ unique: true })
+  @Column({ name: 'user_password', unique: true })
   userPassword: string;
 
   @Column('int')
@@ -33,20 +34,24 @@ export class Store {
   validity: Date;
 
   @ManyToOne(() => Address, address => address.stores)
+  @JoinColumn({ name: 'address_id' })
   address: Address;
 
-  @Column('datetime')
+  @Column('datetime' , { name: 'subscription_end' })
   subscriptionEnd: Date;
 
   @Column({ type: 'tinyint', default: 0 })
   analytics: boolean;
 
   @Column({ nullable: true })
-  storecol: string;
+  active: boolean;
 
   @OneToMany(() => StoreWorker, worker => worker.store)
   workers: StoreWorker[];
 
   @OneToMany(() => Store2FACode, code => code.store)
   twoFactorCodes: Store2FACode[];
+
+  @OneToMany(() => ServiceOrder, serviceOrder => serviceOrder.store)
+  serviceOrders: ServiceOrder[];
 }

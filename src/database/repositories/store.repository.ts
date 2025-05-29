@@ -13,7 +13,8 @@ export class StoreRepository {
   // Busca todas as lojas, incluindo suas relações com Address, Orders e Codes
   async findAll(): Promise<Store[]> {
     return await this.storeRepo.find({
-      relations: ['address', 'orders', 'codes'], // Relaciona as entidades associadas
+      where: { active: true }, // Filtra apenas lojas ativas
+      relations: [], // Relaciona as entidades associadas
     });
   }
 
@@ -21,7 +22,7 @@ export class StoreRepository {
   async findById(id: number): Promise<Store | null> {
     return await this.storeRepo.findOne({
       where: { id },
-      relations: ['address', 'orders', 'codes'], // Relaciona as entidades associadas
+      relations: [], // Relaciona as entidades associadas
     });
   }
 
@@ -46,7 +47,7 @@ export class StoreRepository {
   async findByName(name: string): Promise<Store[]> {
     return await this.storeRepo.find({
       where: { name },
-      relations: ['address', 'orders', 'codes'],
+      relations: [],
     });
   }
 
@@ -54,7 +55,7 @@ export class StoreRepository {
   async findByCode(code: string): Promise<Store | null> {
     return await this.storeRepo.findOne({
       where: { code },
-      relations: ['address', 'orders', 'codes'],
+      relations: [],
     });
   }
 }

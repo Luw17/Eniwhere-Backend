@@ -21,7 +21,7 @@ export class UserRepository {
   // Busca um usuário pelo ID
   async findById(id: number): Promise<AppUser | null> {
     return await this.userRepo.findOne({
-      where: { id , active: true },
+      where: { id },
       relations: [],
     });
   }

@@ -18,7 +18,7 @@ export class ServiceOrder {
   @JoinColumn({ name: 'worker_id' })
   worker: StoreWorker;
 
-  @ManyToOne(() => Store, { eager: false, nullable: false })
+  @ManyToOne(() => Store, store => store.serviceOrders, { nullable: false })
   @JoinColumn({ name: 'store_id' })
   store: Store;
 

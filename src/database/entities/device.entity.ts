@@ -15,6 +15,9 @@ export class Device {
   @Column({ type: 'varchar', length: 100 })
   brand: string;
 
+  @Column({ name: 'active', type: 'boolean', default: true })
+  active: boolean;
+
   @OneToMany(() => UserDevice, ud => ud.device)
   userDevices: UserDevice[];
 }

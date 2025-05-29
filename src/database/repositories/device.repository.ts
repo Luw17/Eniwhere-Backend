@@ -13,6 +13,7 @@ export class DeviceRepository {
   // Busca todos os dispositivos com a relação de UserDevice
   findAll(): Promise<Device[]> {
     return this.deviceRepo.find({
+      where: { active: true },
       relations: [],
     });
   }
@@ -21,7 +22,7 @@ export class DeviceRepository {
   findById(id: number): Promise<Device | null> {
     return this.deviceRepo.findOne({
       where: { id },
-      relations: ['userDevices'], // Relaciona o dispositivo com os usuários
+      relations: [],
     });
   }
 
@@ -29,7 +30,7 @@ export class DeviceRepository {
   findByDeviceName(deviceName: string): Promise<Device | null> {
     return this.deviceRepo.findOne({
       where: {  deviceName},
-      relations: ['userDevices'], // Relaciona o dispositivo com os usuários
+      relations: [], // Relaciona o dispositivo com os usuários
     });
   }
 
@@ -40,9 +41,14 @@ export class DeviceRepository {
   }
 
   // Atualização de um dispositivo existente
-  async updateDevice(id: number, data: Partial<Device>): Promise<Device | null> {
-    await this.deviceRepo.update(id, data);
-    return this.findById(id);
+  async updateDevice(id: number, data: Partial<Device>): Promise<boolean> {
+    try {
+      await this.deviceRepo.update(id, data);
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar dispositivo:', error);
+      return false;
+    }
   }
 
   // Deleta um dispositivo pelo ID
