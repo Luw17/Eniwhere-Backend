@@ -7,9 +7,10 @@ import { StoresModule } from './stores/stores.module';
 import { AdminsModule } from './admins/admins.module';
 import { DevicesModule } from './devices/devices.module';
 import { AddressModule } from './address/address.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
-  imports: [validationModule, AuthModule, StoresModule, AdminsModule, DevicesModule, AddressModule],
+  imports: [validationModule, AuthModule, StoresModule, AdminsModule, DevicesModule, AddressModule, RedisModule],
   controllers: [AppController],
   providers: [AppService],
 })
