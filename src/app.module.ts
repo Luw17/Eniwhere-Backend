@@ -20,7 +20,9 @@ export class AppModule {
     configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude({ path: 'login', method: RequestMethod.POST })
-      .forRoutes('*');
-  }
+      .exclude(
+        { path: 'login', method: RequestMethod.POST },
+      )
+    .forRoutes({ path: '*', method: RequestMethod.ALL });
+    }
 }

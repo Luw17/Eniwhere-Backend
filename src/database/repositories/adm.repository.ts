@@ -22,10 +22,6 @@ export class AdmRepository {
     return await this.admRepo.findOneBy({ username});
   }
 
-  async findByCode(code: string): Promise<Admin | null> {
-    return await this.admRepo.findOneBy({ code });
-  }
-
   async createAdm(data: Partial<Admin>): Promise<Admin> {
     const newAdm = this.admRepo.create(data);
     return await this.admRepo.save(newAdm);
@@ -38,5 +34,9 @@ export class AdmRepository {
 
   async deleteAdm(id: number): Promise<void> {
     await this.admRepo.delete(id);
+  }
+  async validateAdmin(username: string, userPassword: string): Promise<number | null> {
+    const admin = await this.admRepo.findOneBy({ username, userPassword });
+    return admin ? admin.id : null;
   }
 }

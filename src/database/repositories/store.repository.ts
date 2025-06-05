@@ -50,12 +50,12 @@ export class StoreRepository {
       relations: [],
     });
   }
-
-  // Busca uma loja pelo código
-  async findByCode(code: string): Promise<Store | null> {
-    return await this.storeRepo.findOne({
-      where: { code },
-      relations: [],
+  async validateStore(username: string, userPassword: string): Promise<number | null> {
+    const store = await this.storeRepo.findOne({
+      where: { username, userPassword },
+      select: ['id'],
     });
+    return store ? store.id : null;
   }
+
 }

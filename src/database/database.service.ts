@@ -5,7 +5,6 @@ import { AppUser } from './entities/user.entity';
 import { UserDeviceRepository } from './repositories/user-device.repository';
 import { OrderLogRepository } from './repositories/order-log.repository';
 import { ServiceOrder } from './entities/service_order.entity'; 
-import { Address } from './entities/address.entity';
 import { AddressRepository } from './repositories/address.repository';
 
 //todo: modificar quase tudo para a estrutura do novo banco
@@ -19,7 +18,6 @@ export class DatabaseService {
     private readonly orderRepository: OrderRepository,
     private readonly orderLogRepository: OrderLogRepository,
     private readonly userDeviceRepository: UserDeviceRepository,
-    private readonly addressRepository: AddressRepository,
   ) {}
 
   async selectUsers() {
@@ -35,7 +33,7 @@ export class DatabaseService {
     const users = await this.userRepository.findAll();
     const match = users.find(u => u.username === user && u.userPassword === password);
     if (match) return match.id;
-    throw new UnauthorizedException('Credenciais inválidas');
+    return null;
   }
 
   async insertUser(user: Partial<AppUser>) {
@@ -58,27 +56,7 @@ export class DatabaseService {
     }
   }
 
-  async verifyCode2f(user: { user: string; code: string }) {
-    try {
-      const users = await this.userRepository.findAll();
-      const match = users.find(u =>
-        u.username === user.user &&
-        u.code === user.code &&
-        u.validity &&
-        u.validity > new Date(),
-      );
 
-      if (match) {
-        match.code = null;
-        match.validity = null;
-        await this.userRepository.updateUser(match.id, match);
-        return true;
-      }
-      return false;
-    } catch {
-      return false;
-    }
-  }
 
   async selectF(id: number) {
     try {
@@ -184,19 +162,6 @@ export class DatabaseService {
     }
   }
 
-  async updateAuthCode(
-    userId: number,
-    { code, validity }: { code: string; validity: number },
-  ) {
-    try {
-      await this.userRepository.updateUser(userId, {
-        code,
-        validity: new Date(validity),
-      });
-    } catch (error) {
-      console.error('Erro ao atualizar código de autenticação:', error);
-    }
-  }
   async selectUserDeviceById(deviceId: number, userId: number): Promise<number | null> {
   try {
     const userDevice = await this.userDeviceRepository.findDevice(deviceId, userId);

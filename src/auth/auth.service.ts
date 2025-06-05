@@ -24,7 +24,7 @@ export class AuthService {
     if (!user) {
       throw new Error('Invalid username or password');
     }
-
+    console.log('User found:', user);
     const token = uuidv4();
 
     const session = {
@@ -39,6 +39,7 @@ export class AuthService {
   async validateUser(user: { username: string; userPassword: string }) {
    
     const userId = await this.usersService.validateUser(user.username, user.userPassword);
+    console.log('userId:', userId);
     if (userId) {
       return {id: userId, role: 'user'};
     }
@@ -51,9 +52,11 @@ export class AuthService {
       return { id: workerId, role: 'worker' };
     }
     const admId = await this.adminsService.validateAdmin(user.username, user.userPassword);
+    console.log('admId:', admId);
     if (admId) {
       return { id: admId, role: 'admin' };
     }
+    console.log('User not found');
     return null;
   }
   async logout(token: string): Promise<void> {

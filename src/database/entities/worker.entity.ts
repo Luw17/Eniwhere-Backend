@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Store } from './store.entity';
 import { ServiceOrder } from './service_order.entity';
-import { Worker2FACode } from './code-worker.entity';
 
 @Entity('store_workers')
 export class StoreWorker {
@@ -24,6 +23,4 @@ export class StoreWorker {
   @OneToMany(() => ServiceOrder, so => so.worker)
   serviceOrders: ServiceOrder[];
 
-  @OneToMany(() => Worker2FACode, code => code.worker)
-  twoFactorCodes: Worker2FACode[];
 }

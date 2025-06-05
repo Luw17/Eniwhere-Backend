@@ -57,11 +57,4 @@ async createUser(data: Partial<AppUser>): Promise<boolean> {
     });
   }
 
-  // Busca um usuário pelo código de um usuário
-  async findByCode(code: string): Promise<AppUser | null> {
-    return await this.userRepo.findOne({
-      where: { code },
-      relations: ['address', 'devices', 'codes'], // Relaciona as entidades associadas
-    });
-  }
 }

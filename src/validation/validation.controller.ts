@@ -2,7 +2,6 @@ import { Controller, Delete, Put, UnauthorizedException, UseGuards } from "@nest
 import { Get, Post, Body, Param } from "@nestjs/common";
 import { OrdensService } from "../ordens/ordens.service";
 import { UsersService } from "../users/users.service";
-import { ValidateCpfPipe } from "./pipes/validation-cpf.pipe";
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 
@@ -22,17 +21,20 @@ export class ValidationController {
   }
   //done
   @Get('ordens/:id')
+  @Roles('admin', 'store', 'worker')
   async getOneOrdem(@Param('id') id: number) {
     return await this.ordensService.getOneOrdem(id);
   }
   //done
   @Get('ordens/loja/:storeId')
+  @Roles('admin', 'store', 'worker')
   async getOrdensByStore(@Param('storeId') storeId: number) {
     return await this.ordensService.getOrdensByStore(storeId);
   }
 
   //done
   @Put('ordens/:id')
+  @Roles('admin', 'store', 'worker')
   async updateOrdem(
     @Param('id') id: number,
     @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, 
@@ -43,6 +45,7 @@ export class ValidationController {
   
   //done
   @Post('ordens')
+  @Roles('admin', 'store', 'worker')
   async createOrdem( @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, 
     deadline: string, cost: number, status: string, storeId: number,userDeviceId: number}
   ) {
@@ -61,6 +64,7 @@ export class ValidationController {
 
   //done
   @Post('ordens/storeNstatus')
+  @Roles('admin', 'store', 'worker')
   async getOrdensByStoreAndStatus(
     @Body() body: { storeId: number; status: string }
   ) {
@@ -71,32 +75,42 @@ export class ValidationController {
   }
 
   //done
+  
   @Delete('ordens/:id')
+  @Roles('admin', 'store', 'worker')
   async deleteOrdem(@Param('id') id: number) {
     return await this.ordensService.deleteOrdem(id);
   }
 
   //done
+  
   @Put('ordens/:id/concluir')
+  @Roles('admin', 'store', 'worker')
   async concluirOrdem(
     @Param('id') id: number) {
     return await this.ordensService.concluirOrdem(id);
   }
 
   //done
+  
   @Get('usuarios')
+  @Roles('admin', 'store', 'worker')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
   //done
+  
   @Get('usuarios/:id')
+  @Roles('admin', 'store', 'worker')
   async getOneUser(@Param('id') id: number) {
     return await this.usersService.getOneUser(id);
   }
 
   //done
+  
   @Put('usuarios/:id')
+  @Roles('admin', 'store', 'worker', 'user')
   async updateUser(
     @Param('id') id: number,
     @Body() data: {username?: string; name?: string; email?: string; phone?: string; userPassword?: string; number?: number; address?: number;
@@ -113,6 +127,7 @@ export class ValidationController {
 
   //done
   @Post('usuarios')
+  @Roles('admin', 'store', 'worker')
   async createUser(
     @Body() data : { document: string; name: string; email: string; phone?: string ; username?: string; userPassword?: string ;number: number; address?: number;
       postal_code?: string; country?: string; state?: string; city?: string; neighborhood?: string; address_line?: string;
@@ -129,12 +144,14 @@ export class ValidationController {
 
   //done
   @Delete('usuarios/:id')
+  @Roles('admin', 'store', 'worker', 'user')
   async deleteUser(@Param('id') id: number) {
     return await this.usersService.deleteUser(id);
   }
   
   //done
   @Get('usuarios/verificar/:cpf')
+  @Roles('admin', 'store', 'worker')
   async verificarUsuario(@Param('cpf') cpf: string) {
     const sanitizedCpf = cpf.replace(/\D/g, '');
     console.log('entrou no get ' + sanitizedCpf);

@@ -10,7 +10,7 @@ export class StoresService {
     constructor(private readonly storeRepository: StoreRepository, private readonly addressService: AddressService) {}
 
     validateStore(username: string, userPassword: string): Promise<number | null> {
-        throw new Error('Method not implemented.');
+        return this.storeRepository.validateStore(username, userPassword);
     }
     async getStores(): Promise<Store[]> {
         return this.storeRepository.findAll();

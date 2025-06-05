@@ -8,7 +8,7 @@ import { RedisService } from './redis.service';
       store: redisStore as any,
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT, 10),
-      ttl: 300,
+      ttl: 3600,
     }),
   ],
   providers: [RedisService],
