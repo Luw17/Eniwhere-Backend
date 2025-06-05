@@ -1,15 +1,16 @@
-// redis.service.ts
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class RedisService {
+  private readonly logger = new Logger(RedisService.name);
+
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async set<T>(key: string, value: T, ttl?: number): Promise<void> {
-    console.log(`Setting cache for key: ${key}, value: ${value}, ttl: ${ttl}`);
-    await this.cacheManager.set(key, value, ttl);
+  async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
+    const ttlMs = ttlSeconds ? ttlSeconds * 1000 : undefined;
+    await this.cacheManager.set(key, value, ttlMs);
   }
 
   async get<T>(key: string): Promise<T | null> {
@@ -23,5 +24,20 @@ export class RedisService {
   async has(key: string): Promise<boolean> {
     const value = await this.cacheManager.get(key);
     return value !== undefined && value !== null;
+  }
+
+  async healthCheck(): Promise<void> {
+    const testKey = 'redis_health_check';
+    try {
+      await this.cacheManager.set(testKey, 'ok', 5000);
+      const value = await this.cacheManager.get<string>(testKey);
+      if (value === 'ok') {
+        this.logger.log('✅ Redis funcionando');
+      } else {
+        this.logger.error('❌ Redis falhou ao ler valor de teste');
+      }
+    } catch (error) {
+      this.logger.error('❌ Redis falhou na verificação de saúde', error);
+    }
   }
 }
