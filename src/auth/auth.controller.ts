@@ -1,29 +1,31 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Controller, Post, Headers, HttpException, HttpStatus, Body } from '@nestjs/common';
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./login.dto";
 
-@Controller('eniwhere')
+@Controller()
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
   
     @Post('login')
     async login(@Body() loginDto: LoginDto) {
-      console.log('teste');
-      const userId = await this.authService.validateUser(loginDto);
-      
-      if (userId === -1 || userId == null) {
-        return { message: 'Usuário ou senha inválidos' };
-      }
-      /*
-      const authCode = await this.authService.createSession(userId);
-      console.log(authCode);
-      return { message: 'Login bem-sucedido', authCode };
-      */
+      const { username, userPassword } = loginDto;
+      const authCode = await this.authService.login(username, userPassword);
+      return { authCode };
     }
   
-    @Post('logout')
-    logout(@Body('authCode') authCode: string) {
-     // this.authService.revokeSession(authCode);
-      return { message: 'Logout realizado com sucesso' };
+ @Post('logout')
+  async logout(@Headers('authorization') authHeader: string): Promise<{ message: string }> {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new HttpException('Authorization header missing or invalid', HttpStatus.UNAUTHORIZED);
     }
+
+    const token = authHeader.replace('Bearer ', '').trim();
+
+    try {
+      await this.authService.logout(token);
+      return { message: 'Logout successful' };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+    }
+  }
   }

@@ -4,7 +4,7 @@ import { DevicesService } from './devices.service';
 import { Device } from 'src/database/entities/device.entity';
 
 
-@Controller('eniwhere')
+@Controller()
 export class DevicesController {
     constructor(private readonly DevicesService: DevicesService) {}
 

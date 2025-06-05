@@ -1,25 +1,24 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { RedisService } from 'src/redis/redis.service';
+import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-    constructor( private readonly usersService: UsersService) {}
-    
-    async use(req: any, res: any, next: () => void) {
-        const { authCode } = req.query;
+  constructor(private readonly redisService: RedisService) {}
 
-        /*
-        if (!authCode) {
-            return res.status(401).send({ error: 'authCode não encontrado' });
-        }
-       // const userId = await this.usersService.findOne(authCode);//manutenção na função sujeito a mudanças
-       /*
-        if (!userId) {
-            return res.status(401).send({ error: 'authCode inválido' });
-        }
-        req.userId = userId;
-        console.log('AuthMiddleware executado');
-        next();*/ 
+  async use(req: Request, res: Response, next: NextFunction) {
+    const token = req.query.authCode || req.headers['authorization']?.replace('Bearer ', '').trim();
+
+    if (!token || typeof token !== 'string') {
+      throw new UnauthorizedException('Token de autenticação não fornecido');
     }
-       
+
+    const session = await this.redisService.get<{ id: number; role: string }>(`auth:${token}`);
+    if (!session) {
+      throw new UnauthorizedException('Token inválido ou expirado');
+    }
+    req['user'] = session;
+
+    next();
+  }
 }

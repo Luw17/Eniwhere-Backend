@@ -14,8 +14,8 @@ export class StoreWorker {
   @Column({ nullable: true })
   username: string;
 
-  @Column({ nullable: true })
-  user_password: string;
+  @Column({ nullable: true, name: 'user_password' })
+  userPassword: string;
 
   @ManyToOne(() => Store, store => store.workers)
   @JoinColumn({ name: 'store_id' }) 

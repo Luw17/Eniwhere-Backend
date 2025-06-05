@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { StoresService } from '../stores/stores.service';
 import { AdminsService } from '../admins/admins.service';
+import { WorkersService } from '../workers/workers.service';
+import { v4 as uuidv4 } from 'uuid';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -9,51 +12,60 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly StoresService: StoresService,
     private readonly adminsService: AdminsService,
+    private readonly WorkersService: WorkersService,
+    private readonly redisService: RedisService,
 
   ) {}
   private sessions = new Map<string, { userId: number; expiresAt: number }>();
 
-  /*
-  async createSession(userId: number): Promise<string> {
-    const authCode = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    const expiresAt = Date.now() + 86400000;
-    await this.usersService.updateAuthCode(userId, { authCode, authCodeExpiresAt: expiresAt });
-    return authCode;
-  }
-    */
-/*
-async validateSession(authCode: string): Promise<boolean> {
-    const user = await this.usersService.findOne({ where: { authCode } });
-    if (!user || user.validadeCodigoAtivo < Date.now()) {
-      return false; // Sess o inv lida ou expirada.
-    }
-    return true;
-  }
-  */
+  async login(username: string, userPassword: string): Promise<string> {
+    const user = await this.validateUser({ username, userPassword });
 
+    if (!user) {
+      throw new Error('Invalid username or password');
+    }
+
+    const token = uuidv4();
+
+    const session = {
+      id: user.id,
+      role: user.role,
+    };
+
+    await this.redisService.set(`auth:${token}`, session, 60 * 60 * 24);
+
+    return token;
+  }
   async validateUser(user: { username: string; userPassword: string }) {
    
     const userId = await this.usersService.validateUser(user.username, user.userPassword);
     if (userId) {
-      return userId;
+      return {id: userId, role: 'user'};
     }
     const storeId = await this.StoresService.validateStore(user.username, user.userPassword);
     if (storeId) {
-      return storeId;
+      return { id: storeId, role: 'store' };
+    }
+    const workerId = await this.WorkersService.validateWorker(user.username, user.userPassword);
+    if (workerId) {
+      return { id: workerId, role: 'worker' };
     }
     const admId = await this.adminsService.validateAdmin(user.username, user.userPassword);
-  /*
-    const usuario = await this.usersService.getOneUser(userId);
-    console.log(usuario.permissao);
-    if(usuario.permissao == 'user'){ 
-      return null}
-    else{
-    return userId;
+    if (admId) {
+      return { id: admId, role: 'admin' };
+    }
+    return null;
+  }
+  async logout(token: string): Promise<void> {
+    const key = `auth:${token}`;
 
-    }  */
+    const exists = await this.redisService.has(key);
+    if (!exists) {
+      throw new Error('Token inválido ou já expirado');
+    }
+
+    await this.redisService.del(key);
   }
-  revokeSession(authCode: string): void {
-    this.sessions.delete(authCode);
-  }
+
 
 }

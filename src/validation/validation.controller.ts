@@ -1,10 +1,13 @@
-import { Controller, Delete, Put, UnauthorizedException } from "@nestjs/common";
+import { Controller, Delete, Put, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { Get, Post, Body, Param } from "@nestjs/common";
 import { OrdensService } from "../ordens/ordens.service";
 import { UsersService } from "../users/users.service";
 import { ValidateCpfPipe } from "./pipes/validation-cpf.pipe";
+import { Roles } from 'src/auth/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
 
-@Controller('eniwhere')
+@Controller()
+@UseGuards(RolesGuard)
 export class ValidationController {
   constructor(
     private readonly ordensService: OrdensService,
@@ -13,6 +16,7 @@ export class ValidationController {
 
   //done
   @Get('ordens')
+  @Roles('admin', 'store', 'worker')
   async getAllOrdens() {
     return await this.ordensService.getAllOrdens();
   }

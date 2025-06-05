@@ -3,7 +3,7 @@ import { StoresService } from './stores.service';
 import { Store } from 'src/database/entities/store.entity';
 import { AddressService } from 'src/address/address.service';
 
-@Controller('eniwhere')
+@Controller()
 export class StoresController {
   constructor(private readonly storesService: StoresService, private readonly addressService: AddressService) {}
 

@@ -4,11 +4,14 @@ import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
 import { StoresModule } from "../stores/stores.module";
 import { AdminsModule } from "../admins/admins.module";
+import { RedisModule } from "src/redis/redis.module";
+import { RedisService } from "src/redis/redis.service";
+import { WorkersModule } from "src/workers/workers.module";
 
 @Module({
-    imports: [UsersModule,StoresModule,AdminsModule],
+    imports: [UsersModule,StoresModule,AdminsModule,RedisModule,WorkersModule],
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [AuthService,RedisService],
     exports: [AuthService],
 })
 export class AuthModule {}
