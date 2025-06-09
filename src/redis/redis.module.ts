@@ -7,13 +7,14 @@ import { RedisService } from './redis.service';
 @Module({
   imports: [
     CacheModule.registerAsync({
-      useFactory: async () => ({
-        store: redisStore,
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-        ttl: 3600, 
-      }),
-    }),
+  useFactory: async () => ({
+    store: redisStore,
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
+    ttl: 0,
+    isCacheableValue: () => true, 
+  }),
+}),
   ],
   providers: [RedisService],
   exports: [RedisService],

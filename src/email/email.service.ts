@@ -1,30 +1,48 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 
 @Injectable()
-export class EmailService {
-    
-    async sendEmail(data: { email: string, aparelho: string, marca: string, modelo: string, problema: string }): Promise<void> {
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.ethereal.email',
-            port: 587,
-            auth: {
-                user: 'your-email@gmail.com',
-                pass: 'your-password'
-            }
-        });
-        const mailOptions = {
-            from: 'youremail@gmail.com',
-            to: data.email,
-            subject: 'Sua ordem de servi o',
-            text: `Seu aparelho ${data.aparelho} da marca ${data.marca} modelo ${data.modelo} foi registrado com o problema: ${data.problema}`
-        };
+export class EmailService implements OnModuleInit {
+  private transporter: Transporter;
+  private readonly logger = new Logger(EmailService.name);
 
-        await transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return console.log(error);
-            }
-            console.log('Email sent: ' + info.response);
-        });
+  async onModuleInit() {
+    const testAccount = await nodemailer.createTestAccount();
+
+    this.transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass,
+      },
+    });
+
+    this.logger.log(`Ethereal test account created. Login: ${testAccount.user}`);
+  }
+
+  async sendEmail(options: {
+    to: string;
+    subject: string;
+    text?: string;
+    html?: string;
+  }): Promise<void> {
+    const { to, subject, text, html } = options;
+
+    const info = await this.transporter.sendMail({
+      from: '"Sua Aplicação" <no-reply@suaapp.com>',
+      to,
+      subject,
+      text,
+      html,
+    });
+
+    this.logger.log(`✅ Email enviado para ${to}`);
+    this.logger.log(`📨 Message ID: ${info.messageId}`);
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (previewUrl) {
+      this.logger.log(`🔗 Visualize o email em: ${previewUrl}`);
     }
+  }
 }

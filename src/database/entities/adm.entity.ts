@@ -12,4 +12,6 @@ export class Admin {
   @Column('text', { unique: true ,name: 'user_password'})
   userPassword: string;
 
+  @Column()
+  email: string;
 }

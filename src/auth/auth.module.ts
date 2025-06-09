@@ -6,9 +6,10 @@ import { StoresModule } from "../stores/stores.module";
 import { AdminsModule } from "../admins/admins.module";
 import { RedisModule } from "src/redis/redis.module";
 import { WorkersModule } from "src/workers/workers.module";
+import { EmailModule } from "src/email/email.module";
 
 @Module({
-    imports: [UsersModule,StoresModule,AdminsModule,RedisModule,WorkersModule],
+    imports: [UsersModule,StoresModule,AdminsModule,RedisModule,WorkersModule,EmailModule],
     controllers: [AuthController],
     providers: [AuthService],
     exports: [AuthService],
