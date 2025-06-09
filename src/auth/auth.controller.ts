@@ -1,4 +1,4 @@
-import { Controller, Post, Headers, HttpException, HttpStatus, Body } from '@nestjs/common';
+import { Controller, Post, Headers, HttpException, HttpStatus, Body, BadRequestException } from '@nestjs/common';
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./login.dto";
 
@@ -13,6 +13,20 @@ export class AuthController {
       return { authCode };
     }
   
+
+    @Post('verify-2fa')
+    async verifyTwoFactorCode(
+      @Body() body: { userId: number; code: string },
+    ){
+      const { userId, code } = body;
+
+      const success = await this.authService.verifyTwoFactorCode(userId, code);
+      if (!success) {
+        throw new BadRequestException('Código inválido ou expirado');
+      }
+
+      return success ;
+    }
  @Post('logout')
   async logout(@Headers('authorization') authHeader: string): Promise<{ message: string }> {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

@@ -27,7 +27,7 @@ export class WorkerRepository {
   async findLogin(username: string, userPassword: string): Promise<StoreWorker | null> {
     return await this.workerRepo.findOne({
       where: { username, userPassword },
-      select:['id'],
+      select:['id','email'],
       relations: [],
     });
   }

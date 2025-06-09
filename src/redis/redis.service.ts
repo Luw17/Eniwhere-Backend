@@ -9,8 +9,8 @@ export class RedisService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
-    const ttlMs = ttlSeconds ? ttlSeconds * 1000 : undefined;
-    await this.cacheManager.set(key, value, ttlMs);
+    console.log(`Setting key: ${key}, TTL (s): ${ttlSeconds}`);
+    await (this.cacheManager as any).set(key, value, { ttl: ttlSeconds });
   }
 
   async get<T>(key: string): Promise<T | null> {

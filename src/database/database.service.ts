@@ -29,12 +29,18 @@ export class DatabaseService {
     }
   }
 
-  async validateUser(user: string, password: string) {
-    const users = await this.userRepository.findAll();
-    const match = users.find(u => u.username === user && u.userPassword === password);
-    if (match) return match.id;
-    return null;
+async validateUser(user: string, password: string) {
+  const users = await this.userRepository.findAll();
+  const match = users.find(u => u.username === user && u.userPassword === password);
+  if (match) {
+    return {
+      id: match.id,
+      email: match.email,
+    };
   }
+  return null;
+}
+
 
   async insertUser(user: Partial<AppUser>) {
     try {

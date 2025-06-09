@@ -50,12 +50,12 @@ export class StoreRepository {
       relations: [],
     });
   }
-  async validateStore(username: string, userPassword: string): Promise<number | null> {
+  async validateStore(username: string, userPassword: string): Promise<Store | null> {
     const store = await this.storeRepo.findOne({
       where: { username, userPassword },
-      select: ['id'],
+      select: ['id','email'],
     });
-    return store ? store.id : null;
+    return store ? store : null;
   }
 
 }

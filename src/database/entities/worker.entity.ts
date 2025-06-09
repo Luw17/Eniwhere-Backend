@@ -10,11 +10,15 @@ export class StoreWorker {
   @Column({ nullable: true })
   name: string;
 
+
   @Column({ nullable: true })
   username: string;
 
   @Column({ nullable: true, name: 'user_password' })
   userPassword: string;
+
+  @Column()
+  email: string;
 
   @ManyToOne(() => Store, store => store.workers)
   @JoinColumn({ name: 'store_id' }) 

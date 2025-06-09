@@ -35,8 +35,9 @@ export class AdmRepository {
   async deleteAdm(id: number): Promise<void> {
     await this.admRepo.delete(id);
   }
-  async validateAdmin(username: string, userPassword: string): Promise<number | null> {
-    const admin = await this.admRepo.findOneBy({ username, userPassword });
-    return admin ? admin.id : null;
-  }
+async validateAdmin(username: string, userPassword: string): Promise<{ id: number, email: string } | null> {
+  const admin = await this.admRepo.findOneBy({ username, userPassword });
+  return admin ? { id: admin.id, email: admin.email } : null;
+}
+
 }
