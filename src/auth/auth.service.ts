@@ -110,6 +110,6 @@ export class AuthService {
 
     await this.redisService.set(`auth:${token}`, session, 60 * 60 * 24);
 
-    return token;
+    return "Bearer " +token;
   }
 }
