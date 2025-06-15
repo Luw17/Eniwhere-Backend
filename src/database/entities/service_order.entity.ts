@@ -22,32 +22,55 @@ export class ServiceOrder {
   @JoinColumn({ name: 'store_id' })
   store: Store;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @Column({ type: 'datetime', nullable: true })
-  completed_at?: Date;
+  completed_at: Date | null;
 
   @Column({ type: 'int', nullable: true })
-  feedback?: number;
+  feedback: number | null;
 
   @Column({ type: 'int', nullable: true })
-  warranty?: number;
+  warranty: number | null;
 
-  @Column({ type: 'text', nullable: true })
-  cost?: string;
+  @Column({ 
+    type: 'decimal', 
+    precision: 10, 
+    scale: 2, 
+    nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value)
+    }
+  })
+  cost: number | null;
 
-  @Column({ type: 'text', nullable: true })
-  work?: string;
+  @Column({ 
+    type: 'decimal', 
+    precision: 10, 
+    scale: 2, 
+    nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value)
+    }
+  })
+  work: number | null;
 
-  @Column({ type: 'text', nullable: true })
-  status?: string;
+  @Column({ 
+    type: 'varchar', 
+    length: 100, 
+    nullable: true, 
+    default: 'pending' 
+  })
+  status: string | null;
 
   @Column({ type: 'date', nullable: true })
-  deadline?: Date;
+  deadline: Date | null;
 
-  @Column({ type: 'text', nullable: true })
-  problem?: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  problem: string | null;
 
   @OneToMany(() => OrderLog, log => log.serviceOrder)
   logs: OrderLog[];

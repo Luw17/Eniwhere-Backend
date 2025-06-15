@@ -3,10 +3,11 @@ import { UsersService } from "./users.service";
 import { DatabaseModule } from "src/database/database.module";
 import { AddressModule } from "src/address/address.module";
 import { AddressService } from "src/address/address.service";
+import { UsersController } from './users.controller';
 
 @Module({
     imports: [DatabaseModule,AddressModule],
-    controllers: [],
+    controllers: [UsersController],
     providers: [UsersService,AddressService],
     exports: [UsersService],
 })

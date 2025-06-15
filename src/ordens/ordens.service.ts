@@ -29,19 +29,33 @@ export class OrdensService {
         return this.DatabaseService.selectOrdersByStore(storeId);
     }
     /* todo: modificar essa função para receber os dados que vão chegar do front ( body vai ser modificado) e enviar para o database service da forma certa*/
-    async createOrdem(data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId:number}) {
-        console.log('Creating order with data:', data);
-          const orderData: Partial<ServiceOrder> = {
-            work: data.work,
-            problem: data.problem,
-            deadline: data.deadline ? new Date(data.deadline) : null,
-            cost: data.cost?.toString(),
-            status: data.status,
-            userDevice: { id: data.userDeviceId } as UserDevice,
-            worker: { id: data.workerId } as StoreWorker,
-            store: { id: data.storeId } as Store,
-            };
-        return this.DatabaseService.createOrder(orderData);
+    async createOrdem(data: {
+    workerId: number;
+    document: string;
+    deviceId: number;
+    userId: number;
+    work: number;  // Alterado para number (era string)
+    problem: string;
+    deadline: string;
+    cost: number;  // Já está correto como number
+    status: string;
+    storeId: number;
+    userDeviceId: number;
+    }) {
+    console.log('Creating order with data:', data);
+    
+    const orderData: Partial<ServiceOrder> = {
+        work: data.work,  // Agora aceita number diretamente
+        problem: data.problem,
+        deadline: data.deadline ? new Date(data.deadline) : null,
+        cost: data.cost,  // Mantém como number (não precisa converter para string)
+        status: data.status,
+        userDevice: { id: data.userDeviceId } as UserDevice,
+        worker: { id: data.workerId } as StoreWorker,
+        store: { id: data.storeId } as Store,
+    };
+
+    return this.DatabaseService.createOrder(orderData);
     }
     async concluirOrdem(id: number) {
         return this.DatabaseService.updateOrder(id,{status: 'completed'});
