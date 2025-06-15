@@ -7,7 +7,7 @@ import { AddressRepository } from 'src/database/repositories/address.repository'
 @Module({
   imports: [TypeOrmModule.forFeature([Address])],
   providers: [AddressService,AddressRepository],
-  exports: [AddressService, AddressRepository],
+  exports: [AddressService,AddressRepository],
 })
 export class AddressModule {
 

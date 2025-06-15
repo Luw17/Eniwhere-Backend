@@ -57,5 +57,8 @@ export class StoreRepository {
     });
     return store ? store : null;
   }
+    async findByUser(username: string): Promise<Store | null> {
+      return await this.storeRepo.findOneBy({ username});
+    }
 
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ServiceOrder } from './service_order.entity';
 
 @Entity('order_logs')
@@ -7,23 +7,24 @@ export class OrderLog {
   id: number;
 
   @ManyToOne(() => ServiceOrder, order => order.logs)
+  @JoinColumn({ name: 'service_order_id' })
   serviceOrder: ServiceOrder;
 
-  @Column('text')
-  cost: string;
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  cost: number | null;
 
-  @Column('text')
-  work: string;
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  work: number | null;
 
-  @Column('text')
-  status: string;
+  @Column('text', { nullable: true })
+  status: string | null;
 
-  @Column('date')
-  deadline: Date;
+  @Column('date', { nullable: true })
+  deadline: Date | null;
 
-  @Column('text')
-  problem: string;
+  @Column('text', { nullable: true })
+  problem: string | null;
 
-  @Column('datetime')
+  @Column('datetime',{name:'log_date'})
   logDate: Date;
 }

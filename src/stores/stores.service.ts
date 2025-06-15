@@ -3,14 +3,27 @@ import { Address } from 'src/database/entities/address.entity';
 import { Store } from 'src/database/entities/store.entity';
 import { StoreRepository } from 'src/database/repositories/store.repository';
 import { AddressService } from 'src/address/address.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class StoresService {
 
     constructor(private readonly storeRepository: StoreRepository, private readonly addressService: AddressService) {}
 
-    validateStore(username: string, userPassword: string) {
-        return this.storeRepository.validateStore(username, userPassword);
+    async validateStore(username: string, userPassword: string): Promise<{ id: number; email: string } | null> {
+        const store = await this.storeRepository.findByUser(username);
+
+        if (!store) {
+            return null;
+        }
+
+        const passwordMatches = await bcrypt.compare(userPassword, store.userPassword);
+
+        if (!passwordMatches) {
+            return null;
+        }
+
+        return { id: store.id, email: store.email };
     }
     async getStores(): Promise<Store[]> {
         return this.storeRepository.findAll();
@@ -70,7 +83,6 @@ export class StoresService {
             throw new Error('Missing address or address fields');
             }
         }
-
         // Criação da Store
         const newStore: Partial<Store> = {
             name: store.name,
@@ -88,7 +100,11 @@ export class StoresService {
         return this.storeRepository.createStore(newStore);
     }
 
-    async updateStore(id: number, store: Store): Promise<Store | null> {
+    async updateStore(id: number, store: Partial<Store>): Promise<Store | null> {
+        if (store.userPassword) {
+            const saltRounds = 10;
+            store.userPassword = await bcrypt.hash(store.userPassword, saltRounds);
+        }
         return this.storeRepository.updateStore(id, store);
     }
     async deleteStore(id: number): Promise<Store | null> {

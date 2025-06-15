@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Address } from './address.entity';
 import { UserDevice } from './user_has_device.entity';
+import { hashPassword } from 'src/utils/hash-password';
 
 @Entity('app_users')
 export class AppUser {
@@ -37,5 +38,11 @@ export class AppUser {
 
   @OneToMany(() => UserDevice, ud => ud.user)
   userDevices: UserDevice[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    this.userPassword = await hashPassword(this.userPassword);
+  }
 
 }

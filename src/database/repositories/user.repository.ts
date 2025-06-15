@@ -57,4 +57,8 @@ async createUser(data: Partial<AppUser>): Promise<boolean> {
     });
   }
 
+  async findByUser(username: string): Promise<AppUser | null> {
+    return await this.userRepo.findOneBy({ username});
+  }
+
 }

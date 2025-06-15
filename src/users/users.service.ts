@@ -3,16 +3,28 @@ import { DatabaseService } from "../database/database.service";
 import { AppUser } from "src/database/entities/user.entity";
 import { Address } from "src/database/entities/address.entity";
 import { AddressService } from "src/address/address.service";
+import { UserRepository } from "src/database/repositories/user.repository";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
 
-    constructor(private readonly databaseService: DatabaseService, private readonly addressService: AddressService) {
+    constructor(private readonly databaseService: DatabaseService, private readonly addressService: AddressService, private readonly userRepository: UserRepository) {
         console.log('DatabaseService:', this.databaseService);
     }
-    async validateUser(usuario: string, senha: string) {
-        return this.databaseService.validateUser(usuario, senha);
-    }
+  async validateUser(usuario: string, senha: string) {
+      const user = await this.userRepository.findByUser(usuario);
+      if (!user) {
+        return null;
+      }
+
+      const senhaValida = await bcrypt.compare(senha, user.userPassword);
+      if (!senhaValida) {
+        return null;
+      }
+      const { userPassword, ...result } = user;
+      return result;
+  }
 
     async getAllUsers(){
         return this.databaseService.selectUsers();

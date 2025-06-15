@@ -48,5 +48,8 @@ export class WorkerRepository {
   async deleteWorker(id: number): Promise<void> {
     await this.workerRepo.delete(id);
   }
+      async findByUser(username: string): Promise<StoreWorker | null> {
+        return await this.workerRepo.findOneBy({ username});
+      }
 }
 

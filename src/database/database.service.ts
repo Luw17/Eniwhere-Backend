@@ -122,15 +122,6 @@ async validateUser(user: string, password: string) {
       return [];
     }
   }
-  async updateOrder(id: number, data) {
-    try {
-      const order = await this.orderRepository.findById(id);
-      if (!order) return;
-      await this.orderRepository.updateOrder(id, data);
-    } catch (error) {
-      console.error('Erro ao atualizar ordem:', error);
-    }
-  }
 
   async deleteOrder(id: number) {
     try {

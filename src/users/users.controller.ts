@@ -11,21 +11,21 @@ export class UsersController {
   ) {}
   
 
-  @Get('usuarios')
+  @Get('user')
   @Roles('admin', 'store', 'worker')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
   
-  @Get('usuarios/:id')
+  @Get('user/:id')
   @Roles('admin', 'store', 'worker')
   async getOneUser(@Param('id') id: number) {
     return await this.usersService.getOneUser(id);
   }
 
   
-  @Put('usuarios/:id')
+  @Put('user/:id')
   @Roles('admin', 'store', 'worker', 'user')
   async updateUser(
     @Param('id') id: number,
@@ -42,7 +42,7 @@ export class UsersController {
   }
 
   
-  @Post('usuarios')
+  @Post('user')
   @Roles('admin', 'store', 'worker')
   async createUser(
     @Body() data : { document: string; name: string; email: string; phone?: string ; username?: string; userPassword?: string ;number: number; address?: number;
@@ -59,14 +59,14 @@ export class UsersController {
   }
 
 
-  @Delete('usuarios/:id')
+  @Delete('user/:id')
   @Roles('admin', 'store', 'worker', 'user')
   async deleteUser(@Param('id') id: number) {
     return await this.usersService.deleteUser(id);
   }
   
 
-  @Get('usuarios/verificar/:cpf')
+  @Get('user/verify/:cpf')
   @Roles('admin', 'store', 'worker')
   async verificarUsuario(@Param('cpf') cpf: string) {
     const sanitizedCpf = cpf.replace(/\D/g, '');

@@ -33,10 +33,10 @@ export class OrdensController {
     @Roles('admin', 'store', 'worker')
     async updateOrdem(
     @Param('id') id: number,
-    @Body() data: {workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, 
+    @Body() data: {workerId:number,deviceId:number, work: number, problem: string, 
           deadline: string, cost: number, status: string, storeId: number,userDeviceId: number} 
     ) {
-        return await this.ordensService.updateOrdem(id, data);
+        return await this.ordensService.updateOrder(id, data);
     }
 
 
@@ -83,5 +83,10 @@ export class OrdensController {
     async concluirOrdem(
     @Param('id') id: number) {
         return await this.ordensService.concluirOrdem(id);
+    }
+    @Get('order/:id/history')
+    @Roles('admin', 'store', 'worker')
+    async getOrdemHistory(@Param('id') id: number) {
+        return await this.ordensService.getOrdemHistory(id);
     }
 }

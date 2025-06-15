@@ -96,4 +96,24 @@ async updateOrder(id: number, data: Partial<ServiceOrder>): Promise<boolean> {
       relations: ['worker', 'userDevice'],
     });
   }
+  findUserEmailNameById(id:number){
+    return this.orderRepo
+    .createQueryBuilder('so')
+    .leftJoin('so.userDevice', 'ud')
+    .leftJoin('ud.user', 'user')
+    .select(['user.name AS name', 'user.email AS email'])
+    .where('so.id = :id', { id: id })
+    .getRawOne();
+  }
+  selectOrderHistory(id: number): Promise<ServiceOrder | null> {
+    return this.orderRepo.findOne({
+      where: { id: id },
+      relations: ['logs'],
+      order: {
+        logs: {
+          logDate: 'DESC', 
+        },
+      },
+    });
+  }
 }

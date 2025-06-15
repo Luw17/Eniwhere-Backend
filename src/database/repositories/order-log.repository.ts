@@ -26,7 +26,7 @@ export class OrderLogRepository {
   }
 
   // Cria um novo log de pedido
-  async createOrderLog(data: Partial<OrderLog>): Promise<OrderLog> {
+  async save(data: Partial<OrderLog>): Promise<OrderLog> {
     const newOrderLog = this.orderLogRepo.create(data);
     return this.orderLogRepo.save(newOrderLog);
   }

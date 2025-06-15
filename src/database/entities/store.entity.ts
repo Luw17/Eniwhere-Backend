@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, BeforeUpdate, BeforeInsert } from 'typeorm';
 import { Address } from './address.entity';
 import { StoreWorker } from './worker.entity';
 import { ServiceOrder } from './service_order.entity';
+import { hashPassword } from 'src/utils/hash-password';
+
 
 @Entity('stores')
 export class Store {
@@ -44,4 +46,10 @@ export class Store {
 
   @OneToMany(() => ServiceOrder, serviceOrder => serviceOrder.store)
   serviceOrders: ServiceOrder[];
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async hashPassword() {
+      this.userPassword = await hashPassword(this.userPassword);
+    }
 }

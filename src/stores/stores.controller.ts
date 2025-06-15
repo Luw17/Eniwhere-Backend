@@ -37,7 +37,7 @@ export class StoresController {
   //ok
   @Put('stores/:id')
   @Roles('admin')
-  updateStore(@Param('id') id: number, @Body() store: Store): Promise<Store | null> {
+  updateStore(@Param('id') id: number, @Body() store: Partial<Store>): Promise<Store | null> {
     return this.storesService.updateStore(id, store);
   }
 

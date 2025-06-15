@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, 
+  BeforeUpdate  } from 'typeorm';
+import { hashPassword } from 'src/utils/hash-password';
 
 
 @Entity('admins')
@@ -14,4 +16,10 @@ export class Admin {
 
   @Column()
   email: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    this.userPassword = await hashPassword(this.userPassword);
+  }
 }
