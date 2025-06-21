@@ -1,9 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, BeforeUpdate, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  BeforeUpdate,
+  BeforeInsert,
+} from 'typeorm';
 import { Address } from './address.entity';
 import { StoreWorker } from './worker.entity';
 import { ServiceOrder } from './service_order.entity';
-import { hashPassword } from 'src/utils/hash-password';
-
+import { hashPassword } from '../../utils/hash-password';
+import { EncryptionTransformer } from 'typeorm-encrypted';
 
 @Entity('stores')
 export class Store {
@@ -13,10 +22,24 @@ export class Store {
   @Column('text')
   name: string;
 
-  @Column({ unique: true })
+  @Column({
+    unique: true,
+    transformer: new EncryptionTransformer({
+      key: process.env.CRYPTO_SECRET,
+      algorithm: 'aes-256-cbc',
+      ivLength: 16,
+    }),
+  })
   document: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    transformer: new EncryptionTransformer({
+      key: process.env.CRYPTO_SECRET,
+      algorithm: 'aes-256-cbc',
+      ivLength: 16,
+    }),
+  })
   email: string;
 
   @Column({ unique: true })
@@ -28,11 +51,11 @@ export class Store {
   @Column('int')
   number: number;
 
-  @ManyToOne(() => Address, address => address.stores)
+  @ManyToOne(() => Address, (address) => address.stores)
   @JoinColumn({ name: 'address_id' })
   address: Address;
 
-  @Column('datetime' , { name: 'subscription_end' })
+  @Column('datetime', { name: 'subscription_end' })
   subscriptionEnd: Date;
 
   @Column({ type: 'tinyint', default: 0 })
@@ -41,15 +64,17 @@ export class Store {
   @Column({ nullable: true })
   active: boolean;
 
-  @OneToMany(() => StoreWorker, worker => worker.store)
+  @OneToMany(() => StoreWorker, (worker) => worker.store)
   workers: StoreWorker[];
 
-  @OneToMany(() => ServiceOrder, serviceOrder => serviceOrder.store)
+  @OneToMany(() => ServiceOrder, (serviceOrder) => serviceOrder.store)
   serviceOrders: ServiceOrder[];
 
-    @BeforeInsert()
-    @BeforeUpdate()
-    async hashPassword() {
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.userPassword) {
       this.userPassword = await hashPassword(this.userPassword);
     }
+  }
 }
