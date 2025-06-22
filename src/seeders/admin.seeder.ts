@@ -20,6 +20,19 @@ export class AdminSeeder implements Seeder {
       console.log('Admin fixo "Luw" já existe.');
     }
 
+    const Adminjao = await repo.findOne({ where: { username: 'jao' } });
+    if (!Adminjao) {
+      const admin = repo.create({
+        username: 'jao',
+        userPassword: 'senha654',
+        email: 'joaofelipemoreira21@gmailcom',
+      });
+      await repo.save(admin);
+      console.log('Admin fixo "jao" criado.');
+    } else {
+      console.log('Admin fixo "jao" já existe.');
+    }
+
     for (let i = 0; i < 9; i++) {
       const username = faker.internet.username();
       const email = faker.internet.email();

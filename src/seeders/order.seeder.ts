@@ -50,11 +50,11 @@ export class ServiceOrderSeeder implements Seeder {
       order.warranty = faker.datatype.boolean() ? faker.number.int({ min: 0, max: 12 }) : null;
 
       order.cost = faker.datatype.boolean()
-        ? faker.number.float({ min: 100, max: 5000, fractionDigits: 2 })
+        ? faker.number.float({ min: 200, max: 1500, fractionDigits: 2 })
         : null;
 
       order.work = faker.datatype.boolean()
-        ? faker.number.float({ min: 50, max: 3000, fractionDigits: 2 })
+        ? faker.number.float({ min: 20, max: 1000, fractionDigits: 2 })
         : null;
 
       order.status = faker.helpers.arrayElement(['pending', 'in_progress', 'completed', 'cancelled']);
