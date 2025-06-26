@@ -17,16 +17,8 @@ export class ServiceOrderSeeder implements Seeder {
     const workers = await workerRepository.find();
     const stores = await storeRepository.find();
 
-    if (userDevices.length === 0) {
-      console.warn('⚠️ Nenhum UserDevice encontrado. Execute o seeder correspondente.');
-      return;
-    }
-    if (workers.length === 0) {
-      console.warn('⚠️ Nenhum StoreWorker encontrado. Execute o seeder correspondente.');
-      return;
-    }
-    if (stores.length === 0) {
-      console.warn('⚠️ Nenhuma Store encontrada. Execute o seeder correspondente.');
+    if (!userDevices.length || !workers.length || !stores.length) {
+      console.warn('⚠️ Execute os seeders de UserDevice, StoreWorker e Store antes de gerar as ordens.');
       return;
     }
 
@@ -35,38 +27,51 @@ export class ServiceOrderSeeder implements Seeder {
     for (let i = 0; i < 150; i++) {
       const order = new ServiceOrder();
 
+      const createdAt = faker.date.past({ years: 1 });
+      const status = faker.helpers.arrayElement(['pending', 'in_progress', 'completed', 'cancelled']);
+
       order.userDevice = faker.helpers.arrayElement(userDevices);
       order.worker = faker.helpers.arrayElement(workers);
       order.store = faker.helpers.arrayElement(stores);
+      order.status = status;
+      order.created_at = createdAt;
 
-      order.created_at = faker.date.past({ years: 1 }); // até 1 ano atrás
+      // Regras por status
+      switch (status) {
+        case 'completed': {
+          order.deadline = faker.date.soon({ days: faker.number.int({ min: 3, max: 7 }), refDate: createdAt });
+          order.completed_at = faker.date.between({ from: createdAt, to: faker.date.soon({ days: 7, refDate: createdAt }) });
+          order.feedback = faker.number.int({ min: 1, max: 5 });
+          order.warranty = faker.number.int({ min: 0, max: 12 });
+          order.cost = faker.number.float({ min: 200, max: 1500, fractionDigits: 2 });
+          order.work = faker.number.float({ min: 20, max: 1000, fractionDigits: 2 });
+          order.problem = faker.lorem.sentence();
+          break;
+        }
 
-      // completed_at pode ser depois de created_at ou null (ordem em aberto)
-      order.completed_at = faker.datatype.boolean()
-        ? faker.date.between({ from: order.created_at, to: new Date() })
-        : null;
+        case 'in_progress': {
+          order.deadline = faker.date.soon({ days: faker.number.int({ min: 3, max: 10 }), refDate: createdAt });
+          order.cost = faker.number.float({ min: 200, max: 1500, fractionDigits: 2 });
+          order.work = faker.number.float({ min: 20, max: 1000, fractionDigits: 2 });
+          order.problem = faker.lorem.sentence();
+          break;
+        }
 
-      order.feedback = faker.datatype.boolean() ? faker.number.int({ min: 1, max: 5 }) : null;
-      order.warranty = faker.datatype.boolean() ? faker.number.int({ min: 0, max: 12 }) : null;
+        case 'pending': {
+          order.problem = faker.lorem.sentence();
+          break;
+        }
 
-      order.cost = faker.datatype.boolean()
-        ? faker.number.float({ min: 200, max: 1500, fractionDigits: 2 })
-        : null;
-
-      order.work = faker.datatype.boolean()
-        ? faker.number.float({ min: 20, max: 1000, fractionDigits: 2 })
-        : null;
-
-      order.status = faker.helpers.arrayElement(['pending', 'in_progress', 'completed', 'cancelled']);
-
-      order.deadline = faker.datatype.boolean() ? faker.date.soon({ days: 30 }) : null;
-
-      order.problem = faker.datatype.boolean() ? faker.lorem.sentence() : null;
+        case 'cancelled': {
+          order.problem = faker.lorem.sentence();
+          break;
+        }
+      }
 
       orders.push(order);
     }
 
     await soRepository.save(orders);
-    console.log('✅ 150 ordens de serviço geradas com sucesso!');
+    console.log('✅ 150 ordens de serviço realistas geradas com sucesso!');
   }
 }
