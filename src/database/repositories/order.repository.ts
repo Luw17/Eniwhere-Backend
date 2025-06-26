@@ -14,12 +14,65 @@ export class OrderRepository {
       order: { created_at: 'DESC' },
     });
   }
-async findByStoreAndStatus(storeId: number, status: string): Promise<ServiceOrder[]> {
-  return this.orderRepo.find({
-    where: { store: { id: storeId }, status },
-    relations: [],
-  });
+async findByStoreAndStatus(storeId: number, status: string): Promise<any[]> {
+  const raw = await this.orderRepo
+    .createQueryBuilder('order')
+    .leftJoin('order.userDevice', 'userDevice')
+    .leftJoin('userDevice.user', 'user')
+    .leftJoin('userDevice.device', 'device')
+    .where('order.store_id = :storeId', { storeId })
+    .andWhere('order.status = :status', { status })
+    .orderBy('order.created_at', 'DESC')
+    .select([
+      'order.id',
+      'order.created_at',
+      'order.completed_at',
+      'order.feedback',
+      'order.warranty',
+      'order.cost',
+      'order.work',
+      'order.status',
+      'order.deadline',
+      'order.problem',
+      'user.id',
+      'user.name',
+      'device.id',
+      'device.deviceName',
+      'device.brand',
+      'device.model',
+    ])
+    .getRawMany();
+
+  // Mapear o resultado raw para a estrutura desejada
+  return raw.map(row => ({
+    id: row.order_id,
+    created_at: row.order_created_at,
+    completed_at: row.order_completed_at,
+    feedback: row.order_feedback,
+    warranty: row.order_warranty,
+    cost: row.order_cost,
+    work: row.order_work,
+    status: row.order_status,
+    deadline: row.order_deadline,
+    problem: row.order_problem,
+    userDevice: {
+      user: {
+        id: row.user_id,
+        name: row.user_name,
+      },
+      device: {
+        id: row.device_id,
+        deviceName: row.device_deviceName,
+        brand: row.device_brand,
+        model: row.device_model,
+      },
+    },
+  }));
 }
+
+
+
+
 
   // Busca uma ordem pelo ID
   findById(id: number): Promise<ServiceOrder | null> {
@@ -47,12 +100,36 @@ async findByStoreAndStatus(storeId: number, status: string): Promise<ServiceOrde
 
   }
   
-  findByStore(storeId: number): Promise<ServiceOrder[]> {
-    return this.orderRepo.find({
-      where: { store: { id: storeId } },
-      relations: [],
-    });
-  }
+findByStore(storeId: number): Promise<ServiceOrder[]> {
+  return this.orderRepo
+    .createQueryBuilder('order')
+    .leftJoinAndSelect('order.userDevice', 'userDevice')
+    .leftJoinAndSelect('userDevice.user', 'user')
+    .leftJoinAndSelect('userDevice.device', 'device')
+    .where('order.store_id = :storeId', { storeId })
+    .orderBy('order.created_at', 'DESC')
+    .select([
+      'order.id',
+      'order.created_at',
+      'order.completed_at',
+      'order.feedback',
+      'order.warranty',
+      'order.cost',
+      'order.work',
+      'order.status',
+      'order.deadline',
+      'order.problem',
+      'user.name',
+      'user.id', 
+      'device.deviceName',
+      'device.brand',
+      'device.model',
+      'device.id',
+      'userDevice.id'
+    ])
+    .getMany();
+}
+
 
   // Cria uma nova ordem
   async createOrder(orderData: Partial<ServiceOrder>): Promise<boolean> {

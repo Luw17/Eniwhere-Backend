@@ -23,7 +23,7 @@ export class StoreWorkerSeeder implements Seeder {
 
     const workers: StoreWorker[] = [];
 
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 1; i++) {
       const store = faker.helpers.arrayElement(stores);
       const name = faker.person.fullName();
       const username = this.generateUsername(name);

@@ -25,7 +25,7 @@ export class AppUserSeeder implements Seeder {
 
     const users: AppUser[] = [];
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 50; i++) {
       const address = faker.helpers.arrayElement(addresses);
 
       const user = new AppUser();

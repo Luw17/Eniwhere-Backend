@@ -18,7 +18,22 @@ export class StoreSeeder implements Seeder {
 
     const stores: Store[] = [];
 
-    for (let i = 0; i < 100; i++) {
+
+    const manualStore = new Store();
+    manualStore.name = 'Renove';
+    manualStore.document = '12345678901234';
+    manualStore.email = 'Renove@eniwhere.com';
+    manualStore.username = 'Renove';
+    manualStore.userPassword = await hashPassword('renove123');
+    manualStore.number = 100;
+    manualStore.address = faker.helpers.arrayElement(addresses); 
+    manualStore.subscriptionEnd = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+    manualStore.analytics = true;
+    manualStore.active = true;
+
+    stores.push(manualStore);
+
+    for (let i = 0; i < 0; i++) {
       const address = faker.helpers.arrayElement(addresses);
 
       const store = new Store();
@@ -37,6 +52,6 @@ export class StoreSeeder implements Seeder {
     }
 
     await storeRepository.save(stores);
-    console.log('✅ 100 lojas geradas com sucesso!');
+    console.log('✅ 1 loja manual + 99 aleatórias geradas com sucesso!');
   }
 }

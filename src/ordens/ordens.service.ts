@@ -140,7 +140,14 @@ export class OrdensService {
         return this.DatabaseService.selectOrders();
     }
     async getOrdensByStore(storeId: number) {
-        return this.DatabaseService.selectOrdersByStore(storeId);
+        
+    try {
+            console.log('Fetching orders for store ID:', storeId);
+      return await this.orderRepository.findByStore(storeId);
+        } catch (error) {
+      console.error('Erro ao selecionar ordens por loja:', error);
+      return [];
+        }
     }
     async createOrdem(data: {
     workerId: number;
@@ -188,7 +195,12 @@ export class OrdensService {
 
 
     async getOrdensByStoreAndStatus(storeId: number, status: string) {
-        return this.DatabaseService.selectOrdersByStoreAndStatus(storeId, status);
+        try {
+        return await this.orderRepository.findByStoreAndStatus(storeId, status);
+        } catch (error) {
+        console.error('Erro ao selecionar ordens:', error);
+        return [];
+        }
     }
 
     async getOrdemHistory(id: number) {

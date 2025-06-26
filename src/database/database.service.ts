@@ -97,14 +97,7 @@ async validateUser(user: string, password: string) {
       return [];
     }
   }
-  async selectOrdersByStoreAndStatus(storeId: number, status: string) {
-    try {
-      return await this.orderRepository.findByStoreAndStatus(storeId, status);
-    } catch (error) {
-      console.error('Erro ao selecionar ordens:', error);
-      return [];
-    }
-  }
+
 
   async selectOrder(id: number) {
     try {
@@ -114,14 +107,7 @@ async validateUser(user: string, password: string) {
       return null;
     }
   }
-  async selectOrdersByStore(storeId: number) {
-    try {
-      return await this.orderRepository.findByStore(storeId);
-    } catch (error) {
-      console.error('Erro ao selecionar ordens por loja:', error);
-      return [];
-    }
-  }
+
 
   async deleteOrder(id: number) {
     try {

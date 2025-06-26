@@ -66,10 +66,10 @@ export class UsersController {
   }
   
 
-  @Get('user/verify/:cpf')
+  @Get('user/verify/:document')
   @Roles('admin', 'store', 'worker')
-  async verificarUsuario(@Param('cpf') cpf: string) {
-    const sanitizedCpf = cpf.replace(/\D/g, '');
+  async verificarUsuario(@Param('document') document: string) {
+    const sanitizedCpf = document.replace(/\D/g, '');
     console.log('entrou no get ' + sanitizedCpf);
     const userExists = await this.usersService.verifyUser(sanitizedCpf);
     return userExists;
