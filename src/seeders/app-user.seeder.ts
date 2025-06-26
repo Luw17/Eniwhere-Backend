@@ -25,24 +25,47 @@ export class AppUserSeeder implements Seeder {
 
     const users: AppUser[] = [];
 
-    for (let i = 0; i < 50; i++) {
-      const address = faker.helpers.arrayElement(addresses);
+    // 👤 Usuários fixos para testes
+    const fixedUsers = [
+      { document: '00000000001', name: 'Usuário Teste 1', email: 'teste1@email.com', username: 'teste1' },
+      { document: '00000000002', name: 'Usuário Teste 2', email: 'teste2@email.com', username: 'teste2' },
+      { document: '00000000003', name: 'Usuário Teste 3', email: 'teste3@email.com', username: 'teste3' },
+      { document: '00000000004', name: 'Usuário Teste 4', email: 'teste4@email.com', username: 'teste4' },
+      { document: '00000000005', name: 'Usuário Teste 5', email: 'teste5@email.com', username: 'teste5' },
+    ];
 
+    for (const fixed of fixedUsers) {
       const user = new AppUser();
-      user.document = faker.string.numeric(11); // CPF fake
-      user.name = faker.person.fullName();
-      user.email = faker.internet.email();
+      user.document = fixed.document;
+      user.name = fixed.name;
+      user.email = fixed.email;
+      user.username = fixed.username;
       user.phone = this.generateBrazilianPhone();
-      user.username = faker.internet.username();
       user.userPassword = await hashPassword('12345678');
       user.number = faker.string.numeric(4);
-      user.address = address;
+      user.address = faker.helpers.arrayElement(addresses);
+      user.active = true;
+
+      users.push(user);
+    }
+
+    // 👥 Usuários aleatórios
+    for (let i = 0; i < 200; i++) {
+      const user = new AppUser();
+      user.document = faker.string.numeric(11);
+      user.name = faker.person.fullName();
+      user.email = faker.internet.email();
+      user.username = faker.internet.username();
+      user.phone = this.generateBrazilianPhone();
+      user.userPassword = await hashPassword('12345678');
+      user.number = faker.string.numeric(4);
+      user.address = faker.helpers.arrayElement(addresses);
       user.active = true;
 
       users.push(user);
     }
 
     await userRepository.save(users);
-    console.log('✅ 200 usuários gerados com sucesso!');
+    console.log(`✅ ${users.length} usuários gerados com sucesso!`);
   }
 }
