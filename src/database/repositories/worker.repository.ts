@@ -51,5 +51,9 @@ export class WorkerRepository {
       async findByUser(username: string): Promise<StoreWorker | null> {
         return await this.workerRepo.findOneBy({ username});
       }
+
+  async findByEmail(email: string): Promise<StoreWorker | null> {
+    return await this.workerRepo.findOneBy({ email });
+  }
 }
 

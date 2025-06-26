@@ -18,4 +18,13 @@ export class WorkersService {
 
         return worker;
     }
+
+    async findByEmail(email: string): Promise<StoreWorker | null> {
+        return await this.workerRepository.findByEmail(email);
+    }
+    
+    async updatePassword(id: number, newPassword: string): Promise<StoreWorker | null> {
+        const updatedWorker = await this.workerRepository.updateWorker(id, { userPassword: newPassword });
+        return updatedWorker;
+    }
 }

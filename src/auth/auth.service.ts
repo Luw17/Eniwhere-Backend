@@ -112,4 +112,68 @@ export class AuthService {
 
     return "Bearer " +token;
   }
+async forgotPassword(email: string): Promise<void> {
+  const services = [
+    { service: this.usersService, role: 'user' },
+    { service: this.StoresService, role: 'store' },
+    { service: this.WorkersService, role: 'worker' },
+    { service: this.adminsService, role: 'admin' },
+  ];
+
+  let user: any = null;
+  let role: string = '';
+
+  for (const { service, role: currentRole } of services) {
+    user = await service.findByEmail(email);
+    if (user) {
+      role = currentRole;
+      break;
+    }
+  }
+
+  if (!user) {
+    throw new Error('Email não encontrado');
+  }
+
+  const resetToken = uuidv4();
+  const data = JSON.stringify({ id: user.id, role });
+
+  await this.redisService.set(`reset:${resetToken}`, data, 3600); // 1 hora
+
+  await this.emailService.sendEmail({
+    to: email,
+    subject: 'Redefinição de Senha',
+    html: `<p>Para redefinir sua senha, acesse o link abaixo:</p>
+           <p><a href="http://localhost:3000/reset-password?token=${resetToken}">Redefinir Senha</a></p>
+           <p>Este link é válido por 1 hora.</p>`,
+  });
+}
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const data = await this.redisService.get<string>(`reset:${token}`);
+    if (!data) {
+      throw new Error('Token inválido ou expirado');
+    }
+
+    const { id, role } = JSON.parse(data) as { id: number; role: string };
+
+    const serviceMap = {
+      user: this.usersService,
+      store: this.StoresService,
+      worker: this.WorkersService,
+      admin: this.adminsService,
+    };
+
+    const service = serviceMap[role as keyof typeof serviceMap];
+
+    if (!service) {
+      throw new Error('Tipo de usuário inválido');
+    }
+    console.log(`Resetting password for ${role} with ID ${id}`);
+    console.log(`New password: ${newPassword}`);
+    await service.updatePassword(id, newPassword);
+
+    await this.redisService.del(`reset:${token}`);
+  }
+
+
 }

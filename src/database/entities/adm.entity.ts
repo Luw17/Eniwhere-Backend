@@ -6,7 +6,6 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { hashPassword } from '../../utils/hash-password';
-import { EncryptionTransformer } from 'typeorm-encrypted';
 
 @Entity('admins')
 export class Admin {
@@ -19,14 +18,7 @@ export class Admin {
   @Column('text', { unique: true, name: 'user_password' })
   userPassword: string;
 
-  @Column({
-    type: 'text',
-    transformer: new EncryptionTransformer({
-      key: process.env.CRYPTO_SECRET,
-      algorithm: 'aes-256-cbc',
-      ivLength: 16,
-    }),
-  })
+  @Column('text', { unique: true })
   email: string;
 
   @BeforeInsert()

@@ -11,42 +11,22 @@ import {
 import { Store } from './store.entity';
 import { ServiceOrder } from './service_order.entity';
 import { hashPassword } from '../../utils/hash-password';
-import { EncryptionTransformer } from 'typeorm-encrypted';
 
 @Entity('store_workers')
 export class StoreWorker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    nullable: true,
-    transformer: new EncryptionTransformer({
-      key: process.env.CRYPTO_SECRET,
-      algorithm: 'aes-256-cbc',
-      ivLength: 16,
-    }),
-  })
+  @Column({ nullable: true })
   name: string;
 
-  @Column({
-    transformer: new EncryptionTransformer({
-      key: process.env.CRYPTO_SECRET,
-      algorithm: 'aes-256-cbc',
-      ivLength: 16,
-    }),
-  })
+  @Column()
   username: string;
 
   @Column({ nullable: true, name: 'user_password' })
   userPassword: string;
 
-  @Column({
-    transformer: new EncryptionTransformer({
-      key: process.env.CRYPTO_SECRET,
-      algorithm: 'aes-256-cbc',
-      ivLength: 16,
-    }),
-  })
+  @Column()
   email: string;
 
   @ManyToOne(() => Store, (store) => store.workers)

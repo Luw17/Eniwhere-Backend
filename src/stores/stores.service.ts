@@ -110,4 +110,11 @@ export class StoresService {
     async deleteStore(id: number): Promise<Store | null> {
         return this.storeRepository.updateStore(id, { active: false });
     }
+
+    async findByEmail(email: string): Promise<Store | null> {
+        return this.storeRepository.findByEmail(email);
+    }
+    async updatePassword(id: number, newPassword: string): Promise<Store | null> {
+        return this.storeRepository.updateStore(id, { userPassword: newPassword });
+    }
 }

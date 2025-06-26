@@ -23,7 +23,9 @@ export class AppModule {
       .apply(AuthMiddleware)
       .exclude(
         { path: 'login', method: RequestMethod.POST },
-        { path: 'verify-2fa', method: RequestMethod.POST }
+        { path: 'verify-2fa', method: RequestMethod.POST },
+        { path: 'forgot-password', method: RequestMethod.POST },
+        { path: 'reset-password', method: RequestMethod.POST }
       )
     .forRoutes({ path: '*', method: RequestMethod.ALL });
     }

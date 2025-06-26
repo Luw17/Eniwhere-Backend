@@ -61,4 +61,8 @@ export class StoreRepository {
       return await this.storeRepo.findOneBy({ username});
     }
 
+    async findByEmail(email: string): Promise<Store | null> {
+      return await this.storeRepo.findOneBy({ email });
+    }
+
 }

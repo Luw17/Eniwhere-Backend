@@ -153,4 +153,12 @@ export class UsersService {
     async getUserDeviceByid(deviceId: number, userId: number) {
         return this.databaseService.selectUserDeviceById(deviceId,userId);
     }
+    async findByEmail (email: string): Promise<AppUser | null> {
+        return this.userRepository.findByEmail(email);
+    }
+
+    async updatePassword(id: number, newPassword: string): Promise<AppUser | null> {
+        const updatedUser = await this.userRepository.updateUser(id, { userPassword: newPassword });
+        return updatedUser;
+    }
 }

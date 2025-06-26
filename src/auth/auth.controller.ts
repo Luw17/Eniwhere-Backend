@@ -9,6 +9,7 @@ export class AuthController {
     @Post('login')
     async login(@Body() loginDto: LoginDto) {
       const { username, userPassword } = loginDto;
+      console.log('Login attempt:', { username, userPassword });
       const authCode = await this.authService.login(username, userPassword  );
       return  authCode ;
     }
@@ -42,4 +43,33 @@ export class AuthController {
       throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
     }
   }
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: { email: string }) {
+    const { email } = body;
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    try {
+      await this.authService.forgotPassword(email);
+      return { message: 'Password reset link sent to your email' };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
+  @Post('reset-password')
+  async resetPassword(@Body() body: { token: string; newPassword: string }) {
+    const { token, newPassword } = body;
+    if (!token || !newPassword) {
+      throw new BadRequestException('Email and new password are required');
+    }
+
+    try {
+      await this.authService.resetPassword(token, newPassword);
+      return { message: 'Password reset successfully' };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+}

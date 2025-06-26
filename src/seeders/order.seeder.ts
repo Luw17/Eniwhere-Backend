@@ -32,7 +32,7 @@ export class ServiceOrderSeeder implements Seeder {
 
     const orders: ServiceOrder[] = [];
 
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 1500; i++) {
       const order = new ServiceOrder();
 
       order.userDevice = faker.helpers.arrayElement(userDevices);
@@ -67,6 +67,6 @@ export class ServiceOrderSeeder implements Seeder {
     }
 
     await soRepository.save(orders);
-    console.log('✅ 150 ordens de serviço geradas com sucesso!');
+    console.log('✅ 1500 ordens de serviço geradas com sucesso!');
   }
 }

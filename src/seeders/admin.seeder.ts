@@ -33,7 +33,7 @@ export class AdminSeeder implements Seeder {
       console.log('Admin fixo "jao" já existe.');
     }
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 10; i++) {
       const username = faker.internet.username();
       const email = faker.internet.email();
       const password = 'Senha123!';

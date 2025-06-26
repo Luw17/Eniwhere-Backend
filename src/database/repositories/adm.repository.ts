@@ -28,9 +28,15 @@ export class AdmRepository {
   }
 
   async updateAdm(id: number, data: Partial<Admin>): Promise<Admin> {
-    await this.admRepo.update(id, data);
-    return await this.findById(id);
+    const adm = await this.findById(id);
+    if (!adm) {
+      throw new Error('Admin not found');
+    }
+
+    Object.assign(adm, data);
+    return await this.admRepo.save(adm);
   }
+
 
   async deleteAdm(id: number): Promise<void> {
     await this.admRepo.delete(id);
@@ -39,5 +45,9 @@ async validateAdmin(username: string, userPassword: string): Promise<{ id: numbe
   const admin = await this.admRepo.findOneBy({ username, userPassword });
   return admin ? { id: admin.id, email: admin.email } : null;
 }
+
+  async findByEmail(email: string): Promise<Admin | null> {
+    return await this.admRepo.findOneBy({ email });
+  }
 
 }
