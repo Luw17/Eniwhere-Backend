@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { DatabaseService } from "../database/database.service";
 import { EmailService } from "../email/email.service";
 import { ServiceOrder } from "src/database/entities/service_order.entity";
 import { UserDevice } from "src/database/entities/user_has_device.entity";
@@ -8,11 +7,12 @@ import { Store } from "src/database/entities/store.entity";
 import { OrderRepository } from "src/database/repositories/order.repository";
 import { OrderLog } from "src/database/entities/order_log.entity";
 import { OrderLogRepository } from "src/database/repositories/order-log.repository";
+import { PictureRepository } from "src/database/repositories/pictures.repository";
 
 @Injectable()
 export class OrdensService {
     constructor( private readonly emailService: EmailService,
-         private readonly orderRepository: OrderRepository, private readonly orderLogRepository: OrderLogRepository) {}
+         private readonly orderRepository: OrderRepository, private readonly orderLogRepository: OrderLogRepository,private readonly pictureRepository: PictureRepository) {}
     async deleteOrdem(id: number) {
         try {
             const order = await this.orderRepository.findById(id);
@@ -179,16 +179,28 @@ async updateOrder(
             return [];
         }
     }
-    async getOrdensByStore(storeId: number) {
-        
-    try {
-            console.log('Fetching orders for store ID:', storeId);
-      return await this.orderRepository.findByStore(storeId);
-        } catch (error) {
-      console.error('Erro ao selecionar ordens por loja:', error);
-      return [];
-        }
-    }
+async getOrdensByStore(storeId: number) {
+  try {
+    console.log('Fetching orders for store ID:', storeId);
+
+    const orders = await this.orderRepository.findByStore(storeId);
+
+    const ordersWithFirstImage = orders.map(order => ({
+      ...order,
+      firstImage:
+        order.pictures && order.pictures.length > 0
+          ? order.pictures[0].path
+          : null,
+    }));
+
+    return ordersWithFirstImage;
+  } catch (error) {
+    console.error('Erro ao selecionar ordens por loja:', error);
+    return [];
+  }
+}
+
+
     async createOrdem(data: {
     workerId: number;
     document: string;
@@ -239,18 +251,43 @@ async updateOrder(
     }
 
 
-    async getOrdensByStoreAndStatus(storeId: number, status: string) {
-        try {
-        return await this.orderRepository.findByStoreAndStatus(storeId, status);
-        } catch (error) {
-        console.error('Erro ao selecionar ordens:', error);
-        return [];
-        }
-    }
+async getOrdensByStoreAndStatus(storeId: number, status: string) {
+  try {
+    console.log('Fetching orders for store ID and status:', storeId, status);
+
+    const orders = await this.orderRepository.findByStoreAndStatus(storeId, status);
+
+    const ordersWithFirstImage = orders.map(order => ({
+      ...order,
+      firstImage:
+        order.pictures && order.pictures.length > 0
+          ? order.pictures[0].path
+          : null,
+    }));
+
+    return ordersWithFirstImage;
+  } catch (error) {
+    console.error('Erro ao selecionar ordens por loja e status:', error);
+    return [];
+  }
+}
 
     async getOrdemHistory(id: number) {
         return this.orderRepository.selectOrderHistory(id);
     }
+
+      async savePictures(orderId: number, imagePaths: string[]): Promise<void> {
+    const order = await this.orderRepository.findById(orderId);
+    if (!order) {
+      throw new Error('Ordem não encontrada');
+    }
+
+    const pictures = imagePaths.map((path) =>
+      this.pictureRepository.create({ path, serviceOrder: order })
+    );
+
+    await this.pictureRepository.save(pictures);
+  }
 }
 
 

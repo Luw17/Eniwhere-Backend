@@ -34,17 +34,18 @@ export class ServiceOrder {
   @Column({ type: 'int', nullable: true })
   warranty: number | null;
 
-  @Column({ 
-    type: 'decimal', 
-    precision: 10, 
-    scale: 2, 
-    nullable: true,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string) => parseFloat(value)
-    }
-  })
-  cost: number | null;
+@Column({
+  type: 'decimal',
+  precision: 10,
+  scale: 2,
+  nullable: true,
+  transformer: {
+    to: (value: any) => value === '' || value === undefined ? null : Number(value),
+    from: (value: string) => parseFloat(value),
+  },
+})
+cost: number | null;
+
 
   @Column({ 
     type: 'decimal', 

@@ -20,66 +20,88 @@ async findByStoreAndStatus(storeId: number, status: string): Promise<any[]> {
     .leftJoin('order.userDevice', 'userDevice')
     .leftJoin('userDevice.user', 'user')
     .leftJoin('userDevice.device', 'device')
+    .leftJoin('order.pictures', 'pictures')  // join nas imagens
     .where('order.store_id = :storeId', { storeId })
     .andWhere('order.status = :status', { status })
     .orderBy('order.created_at', 'DESC')
     .select([
-      'order.id',
-      'order.created_at',
-      'order.completed_at',
-      'order.feedback',
-      'order.warranty',
-      'order.cost',
-      'order.work',
-      'order.status',
-      'order.deadline',
-      'order.problem',
-      'user.id',
-      'user.name',
-      'device.id',
-      'device.deviceName',
-      'device.brand',
-      'device.model',
+      'order.id AS order_id',
+      'order.created_at AS order_created_at',
+      'order.completed_at AS order_completed_at',
+      'order.feedback AS order_feedback',
+      'order.warranty AS order_warranty',
+      'order.cost AS order_cost',
+      'order.work AS order_work',
+      'order.status AS order_status',
+      'order.deadline AS order_deadline',
+      'order.problem AS order_problem',
+      'user.id AS user_id',
+      'user.name AS user_name',
+      'device.id AS device_id',
+      'device.deviceName AS device_deviceName',
+      'device.brand AS device_brand',
+      'device.model AS device_model',
+      'pictures.id AS picture_id',
+      'pictures.path AS picture_path',
     ])
     .getRawMany();
 
-  // Mapear o resultado raw para a estrutura desejada
-  return raw.map(row => ({
-    id: row.order_id,
-    created_at: row.order_created_at,
-    completed_at: row.order_completed_at,
-    feedback: row.order_feedback,
-    warranty: row.order_warranty,
-    cost: row.order_cost,
-    work: row.order_work,
-    status: row.order_status,
-    deadline: row.order_deadline,
-    problem: row.order_problem,
-    userDevice: {
-      user: {
-        id: row.user_id,
-        name: row.user_name,
-      },
-      device: {
-        id: row.device_id,
-        deviceName: row.device_deviceName,
-        brand: row.device_brand,
-        model: row.device_model,
-      },
-    },
-  }));
+  // Agrupar imagens por ordem
+  const ordersMap = new Map<number, any>();
+
+  for (const row of raw) {
+    let order = ordersMap.get(row.order_id);
+    if (!order) {
+      order = {
+        id: row.order_id,
+        created_at: row.order_created_at,
+        completed_at: row.order_completed_at,
+        feedback: row.order_feedback,
+        warranty: row.order_warranty,
+        cost: row.order_cost,
+        work: row.order_work,
+        status: row.order_status,
+        deadline: row.order_deadline,
+        problem: row.order_problem,
+        userDevice: {
+          user: {
+            id: row.user_id,
+            name: row.user_name,
+          },
+          device: {
+            id: row.device_id,
+            deviceName: row.device_deviceName,
+            brand: row.device_brand,
+            model: row.device_model,
+          },
+        },
+        pictures: [],
+      };
+      ordersMap.set(row.order_id, order);
+    }
+    if (row.picture_id) {
+      order.pictures.push({
+        id: row.picture_id,
+        path: row.picture_path,
+      });
+    }
+  }
+
+  return Array.from(ordersMap.values());
 }
 
 
 
 
 
+
   // Busca uma ordem pelo ID
-  findById(id: number): Promise<ServiceOrder | null> {
-    return this.orderRepo
+findById(id: number): Promise<ServiceOrder | null> {
+  return this.orderRepo
     .createQueryBuilder('order')
     .leftJoin('order.worker', 'worker')
     .leftJoin('order.store', 'store')
+    .leftJoinAndSelect('order.pictures', 'pictures')
     .select([
       'order.id',
       'order.created_at',
@@ -93,12 +115,13 @@ async findByStoreAndStatus(storeId: number, status: string): Promise<any[]> {
       'order.problem',
       'worker.name',
       'store.name',
+      'pictures.id',
+      'pictures.path',
     ])
     .where('order.id = :id', { id })
     .getOne();
+}
 
-
-  }
   
 findByStore(storeId: number): Promise<ServiceOrder[]> {
   return this.orderRepo
@@ -106,6 +129,7 @@ findByStore(storeId: number): Promise<ServiceOrder[]> {
     .leftJoinAndSelect('order.userDevice', 'userDevice')
     .leftJoinAndSelect('userDevice.user', 'user')
     .leftJoinAndSelect('userDevice.device', 'device')
+    .leftJoinAndSelect('order.pictures', 'pictures')  // aqui adiciona as imagens
     .where('order.store_id = :storeId', { storeId })
     .orderBy('order.created_at', 'DESC')
     .select([
@@ -120,28 +144,32 @@ findByStore(storeId: number): Promise<ServiceOrder[]> {
       'order.deadline',
       'order.problem',
       'user.name',
-      'user.id', 
+      'user.id',
       'device.deviceName',
       'device.brand',
       'device.model',
       'device.id',
-      'userDevice.id'
+      'userDevice.id',
+      'pictures.id',       // precisa selecionar o id da picture
+      'pictures.path',     // e o caminho da imagem
     ])
     .getMany();
 }
 
 
+
   // Cria uma nova ordem
-  async createOrder(orderData: Partial<ServiceOrder>): Promise<boolean> {
-    try {
-      const newOrder = this.orderRepo.create(orderData);
-      await this.orderRepo.save(newOrder);
-      return true; // Sucesso
-    } catch (error) {
-      console.error('Erro ao criar ordem de serviço:', error);
-      return false; // Falha
-    }
+async createOrder(orderData: Partial<ServiceOrder>): Promise<ServiceOrder> {
+  try {
+    const newOrder = this.orderRepo.create(orderData);
+    const savedOrder = await this.orderRepo.save(newOrder);
+    return savedOrder; // Retorna a ordem salva com ID
+  } catch (error) {
+    console.error('Erro ao criar ordem de serviço:', error);
+    throw error; // Repassa o erro para o controller tratar
   }
+}
+
 
 async updateOrder(id: number, data: Partial<ServiceOrder>): Promise<boolean> {
   try {
@@ -170,7 +198,7 @@ async updateOrder(id: number, data: Partial<ServiceOrder>): Promise<boolean> {
   findByStatus(status: string): Promise<ServiceOrder[]> {
     return this.orderRepo.find({
       where: { status },
-      relations: ['worker', 'userDevice'],
+      relations: ['worker', 'userDevice','pictures'],
     });
   }
   findUserEmailNameById(id:number){

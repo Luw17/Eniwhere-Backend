@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { StoresService } from '../stores/stores.service';
 import { AdminsService } from '../admins/admins.service';
@@ -24,7 +24,7 @@ export class AuthService {
     const user = await this.validateUser({ username, userPassword });
 
     if (!user) {
-      throw new Error('Invalid username or password');
+      throw new UnauthorizedException('Usuario ou senha inválidos');
     }
 
     if (typeof user.id === 'number' && typeof user.email === 'string') {
