@@ -74,4 +74,20 @@ export class UsersController {
     const userExists = await this.usersService.verifyUser(sanitizedCpf);
     return userExists;
   }
+
+  @Get('user/document/:document')
+  @Roles('admin', 'store', 'worker')
+  async getUserByDocument(@Param('document') Edocument: string) {
+    const sanitizedCpf = Edocument.replace(/\D/g, '');
+    console.log('entrou no get ' + sanitizedCpf);
+
+    const userId = await this.usersService.getIdByDocument(sanitizedCpf);
+    const user = await this.usersService.getBasicInformation(userId);
+
+    if (!user) {
+      throw new UnauthorizedException('Usuário não encontrado');
+    }
+    return user;
+  }
+
 }

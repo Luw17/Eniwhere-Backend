@@ -1,11 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
-import { OrderRepository } from './repositories/order.repository';
 import { AppUser } from './entities/user.entity';
 import { UserDeviceRepository } from './repositories/user-device.repository';
-import { OrderLogRepository } from './repositories/order-log.repository';
-import { ServiceOrder } from './entities/service_order.entity'; 
-import { AddressRepository } from './repositories/address.repository';
+
 
 //todo: modificar quase tudo para a estrutura do novo banco
 //modificar primeiro a parte de criar ordem
@@ -15,8 +12,6 @@ export class DatabaseService {
 
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly orderRepository: OrderRepository,
-    private readonly orderLogRepository: OrderLogRepository,
     private readonly userDeviceRepository: UserDeviceRepository,
   ) {}
 
@@ -89,38 +84,7 @@ async validateUser(user: string, password: string) {
     }
   }
 
-  async selectOrders() {
-    try {
-      return await this.orderRepository.findAll();
-    } catch (error) {
-      console.error('Erro ao selecionar ordens:', error);
-      return [];
-    }
-  }
 
-
-  async selectOrder(id: number) {
-    try {
-      return await this.orderRepository.findById(id);
-    } catch (error) {
-      console.error('Erro ao selecionar ordem:', error);
-      return null;
-    }
-  }
-
-
-  async deleteOrder(id: number) {
-    try {
-      const order = await this.orderRepository.findById(id);
-      if (!order) return;
-      await this.orderRepository.updateOrder(id, {
-        completed_at: new Date(),
-        status: 'cancelled',
-      });
-    } catch (error) {
-      console.error('Erro ao deletar ordem:', error);
-    }
-  }
 
   async getIdByDocument(document: string) {
     try {
@@ -132,19 +96,6 @@ async validateUser(user: string, password: string) {
       return null;
     }
   }
-
-  /* todo: sera modificada para a estrutura do novo banco*/
-  //{workerId:number,document:string,deviceId:number,userId:number, work: string, problem: string, deadline: string, cost: number, status: string, storeId: number,userDeviceId: number}
-  async createOrder(orderData: Partial<ServiceOrder>) {
-    try {
-      const newOrder = await this.orderRepository.createOrder(orderData);
-      return newOrder;
-    } catch (error) {
-      console.error('Erro ao criar ordem:', error);
-      throw error;
-    }
-  }
-
   async selectUserDeviceById(deviceId: number, userId: number): Promise<number | null> {
   try {
     const userDevice = await this.userDeviceRepository.findDevice(deviceId, userId);

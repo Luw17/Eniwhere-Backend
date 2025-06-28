@@ -32,7 +32,7 @@ export class UsersService {
     async getOneUser(id: number) {
         return this.databaseService.selectF(id);
     }
-    async create(data) {
+async create(data) {
   // Verifica ou cria endereço, se necessário
   if (!data.address) {
     if (
@@ -64,11 +64,10 @@ export class UsersService {
         }
       }
     } else {
-      throw new Error('Missing address or address fields');
+      data.address = null; // 👉 permite criar sem endereço
     }
   }
 
-  // Cria e insere o usuário
   const dataUser: Partial<AppUser> = {
     document: data.document,
     name: data.name,
@@ -88,6 +87,7 @@ export class UsersService {
     throw error;
   }
 }
+
 
 
     async updateUser(id: number,body) {
@@ -135,7 +135,7 @@ export class UsersService {
     async verifyUser(cpf: string){
         return this.databaseService.verifyUser(cpf);
     }
-    async getIdByCpf(cpf: string){
+    async getIdByDocument(cpf: string){
         return this.databaseService.getIdByDocument(cpf);
     }
     
@@ -160,5 +160,9 @@ export class UsersService {
     async updatePassword(id: number, newPassword: string): Promise<AppUser | null> {
         const updatedUser = await this.userRepository.updateUser(id, { userPassword: newPassword });
         return updatedUser;
+    }
+
+    async getBasicInformation(id: number): Promise<Partial<AppUser> | null> {
+        return this.userRepository.getBasicInformation(id);
     }
 }

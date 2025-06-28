@@ -84,7 +84,7 @@ export class OrdensController {
     if (!user) {
       throw new UnauthorizedException('CPF inválido');
     }
-    data.userId = await this.usersService.getIdByCpf(data.document);
+    data.userId = await this.usersService.getIdByDocument(data.document);
     console.log('User ID after verification:', data.userId);
     data.userDeviceId = await this.usersService.getUserDeviceByid(data.deviceId, data.userId);
     console.log('User Device ID:', data.userDeviceId);

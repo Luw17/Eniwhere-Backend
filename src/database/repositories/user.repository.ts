@@ -64,4 +64,11 @@ async createUser(data: Partial<AppUser>): Promise<boolean> {
   findByEmail(email: string): Promise<AppUser | null> {
     return this.userRepo.findOneBy({ email });
   }
+  async getBasicInformation(id: number): Promise<Partial<AppUser> | null> {
+    return await this.userRepo.findOne({
+      where: { id },
+      select: ['id', 'name', 'email', 'phone'],
+    });
+  }
+
 }
