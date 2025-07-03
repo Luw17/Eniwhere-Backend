@@ -39,6 +39,11 @@ async updateOrder(
     userDeviceId: number;
   }>
 ) {
+  const parseNullableNumber = (value: any): number | null => {
+    const num = Number(value);
+    return isNaN(num) ? null : num;
+  };
+
   try {
     const order = await this.orderRepository.findById(id);
     if (!order) {
@@ -46,11 +51,9 @@ async updateOrder(
       return;
     }
 
-    // Convertendo deadline para Date, se existir
     const orderDeadlineDate = order.deadline ? new Date(order.deadline) : null;
     const newDeadlineDate = data.deadline ? new Date(data.deadline) : null;
 
-    // Monta os dados para update
     const updateData: Partial<ServiceOrder> = {
       ...(data.workerId !== undefined && { worker: { id: data.workerId } as StoreWorker }),
       ...(data.storeId !== undefined && { store: { id: data.storeId } as Store }),
@@ -62,7 +65,6 @@ async updateOrder(
       ...(data.status !== undefined && { status: data.status }),
     };
 
-    // Se o status enviado for 'completed' e o status anterior não era 'completed', setar a data de conclusão
     if (data.status === "completed" && order.status !== "completed") {
       updateData.completed_at = new Date();
     }
@@ -87,8 +89,8 @@ async updateOrder(
     if (
       data.deadline !== undefined &&
       (
-        (!orderDeadlineDate && newDeadlineDate) || // antes null e agora tem data
-        (orderDeadlineDate && !newDeadlineDate) || // antes tinha data, agora removido
+        (!orderDeadlineDate && newDeadlineDate) ||
+        (orderDeadlineDate && !newDeadlineDate) ||
         (orderDeadlineDate && newDeadlineDate && orderDeadlineDate.toISOString() !== newDeadlineDate.toISOString())
       )
     )
@@ -115,8 +117,8 @@ async updateOrder(
       const workChange = changedFields.find((c) => c.field === "work");
       const deadlineChange = changedFields.find((c) => c.field === "deadline");
 
-      orderLog.cost = costChange ? Number(costChange.oldValue) : null;
-      orderLog.work = workChange ? Number(workChange.oldValue) : null;
+      orderLog.cost = costChange ? parseNullableNumber(costChange.oldValue) : null;
+      orderLog.work = workChange ? parseNullableNumber(workChange.oldValue) : null;
       orderLog.status = changedFields.find((c) => c.field === "status")?.oldValue ?? "";
       orderLog.deadline = deadlineChange && deadlineChange.oldValue ? new Date(deadlineChange.oldValue) : null;
       orderLog.problem = changedFields.find((c) => c.field === "problem")?.oldValue ?? "";
@@ -131,16 +133,14 @@ async updateOrder(
       return;
     }
 
-    const emailChanges = changedFields.map((c) => {
-      return `${c.field}: ${c.oldValue} → ${c.newValue}`;
-    });
+    const emailChanges = changedFields.map((c) => `${c.field}: ${c.oldValue} → ${c.newValue}`);
 
     const emailBody =
       emailChanges.length > 0
         ? `<p>Olá ${user.name},</p>
             <p>Sua ordem de serviço foi atualizada com as seguintes alterações:</p>
             <ul>
-            ${emailChanges.map((change) => `<li>${change}</li>`).join("")}
+              ${emailChanges.map((change) => `<li>${change}</li>`).join("")}
             </ul>
             <p>Obrigado pela preferência!</p>`
         : `<p>Olá ${user.name},</p>
@@ -157,6 +157,7 @@ async updateOrder(
     throw error;
   }
 }
+
 
 
 
