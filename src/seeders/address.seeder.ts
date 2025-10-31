@@ -36,7 +36,7 @@ export class AddressSeeder implements Seeder {
 
     const addresses: Address[] = [];
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 100; i++) {
       const estado = faker.helpers.arrayElement(estados);
       const cidade = faker.helpers.arrayElement(cidadesPorEstado[estado] as string[]);
       const bairro = faker.helpers.arrayElement(bairros);

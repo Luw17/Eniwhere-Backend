@@ -50,7 +50,7 @@ export class AppUserSeeder implements Seeder {
     }
 
     // 👥 Usuários aleatórios
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 150; i++) {
       const user = new AppUser();
       user.document = faker.string.numeric(11);
       user.name = faker.person.fullName();

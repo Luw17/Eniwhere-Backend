@@ -24,7 +24,7 @@ export class ServiceOrderSeeder implements Seeder {
 
     const orders: ServiceOrder[] = [];
 
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 500; i++) {
       const order = new ServiceOrder();
 
       const createdAt = faker.date.past({ years: 1 });
